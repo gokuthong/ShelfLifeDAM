@@ -1,362 +1,338 @@
 'use client'
 
-import { useState, useEffect } from 'react'
-import { AppLayout } from '@/components/Layout/AppLayout'
+import { useState } from 'react'
 import {
   Box,
-  Stack,
+  VStack,
+  HStack,
+  Heading,
   Text,
-  Card,
-  Avatar,
-  Button,
   Input,
-  Textarea,
+  Button,
   Badge,
-  SimpleGrid,
-  Divider,
-  StatCard,
+  Grid,
 } from '@chakra-ui/react'
+import { AppLayout } from '@/components/Layout/AppLayout'
 import { useAuth } from '@/contexts/AuthContext'
-import { updateUserProfile, getUserStats } from '@/services/api'
-import { format } from 'date-fns'
-
-const showToast = (options: {
-  title: string
-  description?: string
-  status: 'success' | 'error' | 'warning' | 'info'
-}) => {
-  if (options.status === 'error') {
-    alert(`Error: ${options.title}${options.description ? ` - ${options.description}` : ''}`)
-  } else if (options.status === 'success') {
-    alert(`Success: ${options.title}`)
-  } else {
-    alert(`${options.title}${options.description ? ` - ${options.description}` : ''}`)
-  }
-}
-
-interface UserStats {
-  total_uploads: number
-  total_downloads: number
-  storage_used: number
-  recent_activity: number
-}
+import { User, Mail, Shield, Calendar } from 'lucide-react'
 
 export default function ProfilePage() {
-  const { user, updateUser } = useAuth()
+  const { user, updateProfile } = useAuth()
   const [isEditing, setIsEditing] = useState(false)
-  const [isLoading, setIsLoading] = useState(false)
-  const [stats, setStats] = useState<UserStats>({
-    total_uploads: 0,
-    total_downloads: 0,
-    storage_used: 0,
-    recent_activity: 0,
-  })
+  const [isSaving, setIsSaving] = useState(false)
+  const [message, setMessage] = useState<{ type: 'success' | 'error', text: string } | null>(null)
+
   const [formData, setFormData] = useState({
     first_name: user?.first_name || '',
     last_name: user?.last_name || '',
-    email: user?.email || '',
     profile_info: user?.profile_info || '',
   })
 
-  useEffect(() => {
-    if (user) {
-      setFormData({
-        first_name: user.first_name || '',
-        last_name: user.last_name || '',
-        email: user.email || '',
-        profile_info: user.profile_info || '',
-      })
-      fetchUserStats()
-    }
-  }, [user])
-
-  const fetchUserStats = async () => {
-    try {
-      const response = await getUserStats()
-      setStats(response.data)
-    } catch (error) {
-      console.error('Failed to fetch user stats:', error)
-    }
+  const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {
+    setFormData(prev => ({
+      ...prev,
+      [e.target.name]: e.target.value,
+    }))
   }
 
-  const handleSave = async () => {
-    setIsLoading(true)
+  const handleSubmit = async (e: React.FormEvent) => {
+    e.preventDefault()
+    setIsSaving(true)
+    setMessage(null)
+
     try {
-      await updateUserProfile(formData)
-      await updateUser() // Refresh user context
-      showToast({
-        title: 'Profile updated',
-        description: 'Your profile has been successfully updated',
-        status: 'success',
-      })
+      await updateProfile(formData)
+      setMessage({ type: 'success', text: 'Profile updated successfully!' })
       setIsEditing(false)
     } catch (error: any) {
-      showToast({
-        title: 'Update failed',
-        description: error.message || 'Failed to update profile',
-        status: 'error',
+      setMessage({
+        type: 'error',
+        text: error.message || 'Failed to update profile'
       })
     } finally {
-      setIsLoading(false)
+      setIsSaving(false)
     }
   }
 
-  const formatStorageSize = (bytes: number) => {
-    if (bytes < 1024) return `${bytes} B`
-    if (bytes < 1024 * 1024) return `${(bytes / 1024).toFixed(1)} KB`
-    if (bytes < 1024 * 1024 * 1024) return `${(bytes / (1024 * 1024)).toFixed(1)} MB`
-    return `${(bytes / (1024 * 1024 * 1024)).toFixed(2)} GB`
+  const handleCancel = () => {
+    setFormData({
+      first_name: user?.first_name || '',
+      last_name: user?.last_name || '',
+      profile_info: user?.profile_info || '',
+    })
+    setIsEditing(false)
+    setMessage(null)
   }
 
   const getRoleBadgeColor = (role: string) => {
     switch (role) {
       case 'admin': return 'red'
-      case 'editor': return 'yellow'
-      case 'viewer': return 'blue'
+      case 'editor': return 'blue'
+      case 'viewer': return 'green'
       default: return 'gray'
     }
+  }
+
+  const formatDate = (dateString: string) => {
+    return new Date(dateString).toLocaleDateString('en-US', {
+      year: 'numeric',
+      month: 'long',
+      day: 'numeric'
+    })
   }
 
   if (!user) {
     return (
       <AppLayout>
-        <Box>Loading profile...</Box>
+        <Box textAlign="center" py={10}>
+          <Text>Loading...</Text>
+        </Box>
       </AppLayout>
     )
   }
 
   return (
     <AppLayout>
-      <Stack spacing={6}>
+      <VStack align="stretch" gap={6}>
         <Box>
-          <Text fontSize="2xl" fontWeight="bold">
-            My Profile
-          </Text>
-          <Text color={{ base: "gray.600", _dark: "gray.400" }}>
-            Manage your personal information and settings
+          <Heading size="lg" mb={2}>
+            Profile
+          </Heading>
+          <Text color="gray.600">
+            Manage your account information and preferences
           </Text>
         </Box>
 
-        <SimpleGrid columns={{ base: 1, lg: 3 }} spacing={6}>
-          {/* Profile Info Card */}
-          <Box gridColumn={{ base: "1", lg: "span 2" }}>
-            <Card.Root>
-              <Card.Header>
-                <Stack direction="row" justify="space-between" align="center">
-                  <Text fontSize="lg" fontWeight="bold">
-                    Profile Information
-                  </Text>
-                  <Button
-                    size="sm"
-                    variant={isEditing ? "outline" : "solid"}
-                    onClick={() => {
-                      if (isEditing) {
-                        // Cancel editing
-                        setFormData({
-                          first_name: user.first_name || '',
-                          last_name: user.last_name || '',
-                          email: user.email || '',
-                          profile_info: user.profile_info || '',
-                        })
-                      }
-                      setIsEditing(!isEditing)
-                    }}
-                  >
-                    {isEditing ? 'Cancel' : 'Edit Profile'}
-                  </Button>
-                </Stack>
-              </Card.Header>
-              <Card.Body>
-                <Stack spacing={4}>
-                  <Stack direction="row" align="center" spacing={4}>
-                    <Avatar
-                      size="xl"
-                      name={`${user.first_name} ${user.last_name}`}
-                    />
-                    <Box>
-                      <Text fontSize="xl" fontWeight="bold">
-                        {user.username}
-                      </Text>
-                      <Badge colorScheme={getRoleBadgeColor(user.role)}>
-                        {user.role}
-                      </Badge>
-                    </Box>
-                  </Stack>
+        {message && (
+          <Box
+            p={4}
+            bg={message.type === 'success' ? 'green.50' : 'red.50'}
+            border="1px"
+            borderColor={message.type === 'success' ? 'green.200' : 'red.200'}
+            borderRadius="md"
+          >
+            <Text color={message.type === 'success' ? 'green.700' : 'red.700'}>
+              {message.text}
+            </Text>
+          </Box>
+        )}
 
-                  <Divider />
+        <Grid templateColumns={{ base: '1fr', md: '2fr 1fr' }} gap={6}>
+          {/* Main Profile Info */}
+          <Box
+            bg="white"
+            p={6}
+            border="1px"
+            borderColor="gray.200"
+            borderRadius="md"
+          >
+            <Heading size="md" mb={6}>
+              Personal Information
+            </Heading>
 
-                  <SimpleGrid columns={{ base: 1, md: 2 }} spacing={4}>
-                    <Box>
-                      <Text fontWeight="medium" mb={2}>First Name</Text>
-                      {isEditing ? (
-                        <Input
-                          value={formData.first_name}
-                          onChange={(e) => setFormData(prev => ({
-                            ...prev,
-                            first_name: e.target.value
-                          }))}
-                        />
-                      ) : (
-                        <Text color={{ base: "gray.700", _dark: "gray.300" }}>
-                          {user.first_name || '-'}
-                        </Text>
-                      )}
-                    </Box>
-
-                    <Box>
-                      <Text fontWeight="medium" mb={2}>Last Name</Text>
-                      {isEditing ? (
-                        <Input
-                          value={formData.last_name}
-                          onChange={(e) => setFormData(prev => ({
-                            ...prev,
-                            last_name: e.target.value
-                          }))}
-                        />
-                      ) : (
-                        <Text color={{ base: "gray.700", _dark: "gray.300" }}>
-                          {user.last_name || '-'}
-                        </Text>
-                      )}
-                    </Box>
-
-                    <Box>
-                      <Text fontWeight="medium" mb={2}>Email</Text>
-                      {isEditing ? (
-                        <Input
-                          type="email"
-                          value={formData.email}
-                          onChange={(e) => setFormData(prev => ({
-                            ...prev,
-                            email: e.target.value
-                          }))}
-                        />
-                      ) : (
-                        <Text color={{ base: "gray.700", _dark: "gray.300" }}>
-                          {user.email}
-                        </Text>
-                      )}
-                    </Box>
-
-                    <Box>
-                      <Text fontWeight="medium" mb={2}>Member Since</Text>
-                      <Text color={{ base: "gray.700", _dark: "gray.300" }}>
-                        {format(new Date(user.date_joined), 'MMMM d, yyyy')}
-                      </Text>
-                    </Box>
-                  </SimpleGrid>
-
+            {isEditing ? (
+              <Box as="form" onSubmit={handleSubmit}>
+                <VStack gap={4} align="stretch">
                   <Box>
-                    <Text fontWeight="medium" mb={2}>Bio / Additional Info</Text>
-                    {isEditing ? (
-                      <Textarea
-                        value={formData.profile_info}
-                        onChange={(e) => setFormData(prev => ({
-                          ...prev,
-                          profile_info: e.target.value
-                        }))}
-                        placeholder="Tell us about yourself..."
-                        rows={4}
-                      />
-                    ) : (
-                      <Text color={{ base: "gray.700", _dark: "gray.300" }}>
-                        {user.profile_info || 'No bio provided'}
-                      </Text>
-                    )}
+                    <Text mb={2} fontWeight="medium">First Name</Text>
+                    <Input
+                      name="first_name"
+                      value={formData.first_name}
+                      onChange={handleChange}
+                      placeholder="Enter your first name"
+                    />
                   </Box>
 
-                  {isEditing && (
+                  <Box>
+                    <Text mb={2} fontWeight="medium">Last Name</Text>
+                    <Input
+                      name="last_name"
+                      value={formData.last_name}
+                      onChange={handleChange}
+                      placeholder="Enter your last name"
+                    />
+                  </Box>
+
+                  <Box>
+                    <Text mb={2} fontWeight="medium">Bio</Text>
+                    <Box
+                      as="textarea"
+                      name="profile_info"
+                      value={formData.profile_info}
+                      onChange={handleChange}
+                      placeholder="Tell us about yourself"
+                      w="full"
+                      p={3}
+                      border="1px"
+                      borderColor="gray.300"
+                      borderRadius="md"
+                      minH="120px"
+                      resize="vertical"
+                    />
+                  </Box>
+
+                  <HStack gap={3} pt={4}>
                     <Button
+                      type="submit"
                       colorScheme="blue"
-                      onClick={handleSave}
-                      loading={isLoading}
-                      width="full"
+                      loading={isSaving}
+                      disabled={isSaving}
                     >
                       Save Changes
                     </Button>
-                  )}
-                </Stack>
-              </Card.Body>
-            </Card.Root>
-          </Box>
+                    <Button
+                      variant="outline"
+                      onClick={handleCancel}
+                      disabled={isSaving}
+                    >
+                      Cancel
+                    </Button>
+                  </HStack>
+                </VStack>
+              </Box>
+            ) : (
+              <VStack gap={4} align="stretch">
+                <Box>
+                  <Text fontSize="sm" color="gray.600" mb={1}>Username</Text>
+                  <HStack>
+                    <User size={18} color="gray" />
+                    <Text fontWeight="medium">{user.username}</Text>
+                  </HStack>
+                </Box>
 
-          {/* Stats Card */}
-          <Box>
-            <Card.Root height="fit-content">
-              <Card.Header>
-                <Text fontSize="lg" fontWeight="bold">
-                  Activity Statistics
-                </Text>
-              </Card.Header>
-              <Card.Body>
-                <Stack spacing={4}>
-                  <Box>
-                    <Text fontSize="sm" color={{ base: "gray.600", _dark: "gray.400" }}>
-                      Total Uploads
-                    </Text>
-                    <Text fontSize="2xl" fontWeight="bold">
-                      {stats.total_uploads}
-                    </Text>
-                  </Box>
+                <Box>
+                  <Text fontSize="sm" color="gray.600" mb={1}>Email</Text>
+                  <HStack>
+                    <Mail size={18} color="gray" />
+                    <Text fontWeight="medium">{user.email}</Text>
+                  </HStack>
+                </Box>
 
-                  <Box>
-                    <Text fontSize="sm" color={{ base: "gray.600", _dark: "gray.400" }}>
-                      Total Downloads
-                    </Text>
-                    <Text fontSize="2xl" fontWeight="bold">
-                      {stats.total_downloads}
-                    </Text>
-                  </Box>
+                <Box>
+                  <Text fontSize="sm" color="gray.600" mb={1}>First Name</Text>
+                  <Text fontWeight="medium">
+                    {user.first_name || 'Not set'}
+                  </Text>
+                </Box>
 
-                  <Box>
-                    <Text fontSize="sm" color={{ base: "gray.600", _dark: "gray.400" }}>
-                      Storage Used
-                    </Text>
-                    <Text fontSize="2xl" fontWeight="bold">
-                      {formatStorageSize(stats.storage_used)}
-                    </Text>
-                  </Box>
+                <Box>
+                  <Text fontSize="sm" color="gray.600" mb={1}>Last Name</Text>
+                  <Text fontWeight="medium">
+                    {user.last_name || 'Not set'}
+                  </Text>
+                </Box>
 
-                  <Box>
-                    <Text fontSize="sm" color={{ base: "gray.600", _dark: "gray.400" }}>
-                      Recent Activities
-                    </Text>
-                    <Text fontSize="2xl" fontWeight="bold">
-                      {stats.recent_activity}
-                    </Text>
-                    <Text fontSize="xs" color={{ base: "gray.500", _dark: "gray.500" }}>
-                      Last 30 days
-                    </Text>
-                  </Box>
-                </Stack>
-              </Card.Body>
-            </Card.Root>
-          </Box>
-        </SimpleGrid>
+                <Box>
+                  <Text fontSize="sm" color="gray.600" mb={1}>Bio</Text>
+                  <Text>
+                    {user.profile_info || 'No bio added yet'}
+                  </Text>
+                </Box>
 
-        {/* Security Settings */}
-        <Card.Root>
-          <Card.Header>
-            <Text fontSize="lg" fontWeight="bold">
-              Security Settings
-            </Text>
-          </Card.Header>
-          <Card.Body>
-            <Stack spacing={4}>
-              <Box>
-                <Button variant="outline" colorScheme="blue">
-                  Change Password
+                <Button
+                  colorScheme="blue"
+                  onClick={() => setIsEditing(true)}
+                  mt={4}
+                >
+                  Edit Profile
                 </Button>
-              </Box>
-              <Box>
-                <Text fontSize="sm" color={{ base: "gray.600", _dark: "gray.400" }}>
-                  Last login: {user.last_login ? format(new Date(user.last_login), 'MMMM d, yyyy HH:mm') : 'Never'}
-                </Text>
-              </Box>
-            </Stack>
-          </Card.Body>
-        </Card.Root>
-      </Stack>
+              </VStack>
+            )}
+          </Box>
+
+          {/* Account Details Sidebar */}
+          <VStack gap={4} align="stretch">
+            <Box
+              bg="white"
+              p={6}
+              border="1px"
+              borderColor="gray.200"
+              borderRadius="md"
+            >
+              <Heading size="sm" mb={4}>
+                Account Details
+              </Heading>
+
+              <VStack gap={4} align="stretch">
+                <Box>
+                  <HStack mb={2}>
+                    <Shield size={18} color="gray" />
+                    <Text fontSize="sm" fontWeight="medium">Role</Text>
+                  </HStack>
+                  <Badge
+                    colorScheme={getRoleBadgeColor(user.role)}
+                    fontSize="sm"
+                    px={3}
+                    py={1}
+                    textTransform="capitalize"
+                  >
+                    {user.role}
+                  </Badge>
+                </Box>
+
+                <Box>
+                  <HStack mb={2}>
+                    <Calendar size={18} color="gray" />
+                    <Text fontSize="sm" fontWeight="medium">Member Since</Text>
+                  </HStack>
+                  <Text fontSize="sm" color="gray.600">
+                    {formatDate(user.date_joined)}
+                  </Text>
+                </Box>
+
+                {user.last_login && (
+                  <Box>
+                    <Text fontSize="sm" fontWeight="medium" mb={2}>
+                      Last Login
+                    </Text>
+                    <Text fontSize="sm" color="gray.600">
+                      {formatDate(user.last_login)}
+                    </Text>
+                  </Box>
+                )}
+              </VStack>
+            </Box>
+
+            <Box
+              bg="blue.50"
+              p={4}
+              border="1px"
+              borderColor="blue.200"
+              borderRadius="md"
+            >
+              <Text fontSize="sm" fontWeight="medium" mb={2}>
+                Role Permissions
+              </Text>
+              <VStack align="start" gap={1} fontSize="sm" color="gray.700">
+                {user.is_admin && (
+                  <>
+                    <Text>✓ Full system access</Text>
+                    <Text>✓ User management</Text>
+                    <Text>✓ Upload & manage all assets</Text>
+                    <Text>✓ Delete any assets</Text>
+                  </>
+                )}
+                {user.is_editor && !user.is_admin && (
+                  <>
+                    <Text>✓ Upload assets</Text>
+                    <Text>✓ Edit own assets</Text>
+                    <Text>✓ Download assets</Text>
+                    <Text>✗ User management</Text>
+                  </>
+                )}
+                {user.is_viewer && !user.is_editor && !user.is_admin && (
+                  <>
+                    <Text>✓ Browse assets</Text>
+                    <Text>✓ Download assets</Text>
+                    <Text>✗ Upload assets</Text>
+                    <Text>✗ User management</Text>
+                  </>
+                )}
+              </VStack>
+            </Box>
+          </VStack>
+        </Grid>
+      </VStack>
     </AppLayout>
   )
 }

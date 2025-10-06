@@ -1,27 +1,46 @@
 'use client'
 
-import { Box, VStack, Heading, Text } from '@chakra-ui/react'
-import { AppLayout } from '@/components/Layout/AppLayout'
-import { AssetUpload } from '@/components/Assets/AssetUpload'
-import { RoleGuard } from '@/components/Auth/RoleGuard'
+import { createContext, useContext, useState, useEffect, ReactNode } from 'react'
 
-export default function UploadPage() {
+type ColorMode = 'light' | 'dark'
+
+interface ColorModeContextType {
+  colorMode: ColorMode
+  toggleColorMode: () => void
+}
+
+const ColorModeContext = createContext<ColorModeContextType | undefined>(undefined)
+
+export function ColorModeProvider({ children }: { children: ReactNode }) {
+  const [colorMode, setColorMode] = useState<ColorMode>('light')
+
+  useEffect(() => {
+    // Load saved color mode from localStorage
+    const saved = localStorage.getItem('chakra-ui-color-mode') as ColorMode
+    if (saved) {
+      setColorMode(saved)
+      document.documentElement.setAttribute('data-theme', saved)
+    }
+  }, [])
+
+  const toggleColorMode = () => {
+    const newMode = colorMode === 'light' ? 'dark' : 'light'
+    setColorMode(newMode)
+    localStorage.setItem('chakra-ui-color-mode', newMode)
+    document.documentElement.setAttribute('data-theme', newMode)
+  }
+
   return (
-    <AppLayout>
-      <RoleGuard allowedRoles={['admin', 'editor']}>
-        <VStack align="stretch" gap={6}>
-          <Box>
-            <Heading size="lg" mb={2}>
-              Upload Assets
-            </Heading>
-            <Text color="gray.600">
-              Upload images, videos, documents, and other digital assets
-            </Text>
-          </Box>
-
-          <AssetUpload />
-        </VStack>
-      </RoleGuard>
-    </AppLayout>
+    <ColorModeContext.Provider value={{ colorMode, toggleColorMode }}>
+      {children}
+    </ColorModeContext.Provider>
   )
+}
+
+export function useColorMode() {
+  const context = useContext(ColorModeContext)
+  if (!context) {
+    throw new Error('useColorMode must be used within ColorModeProvider')
+  }
+  return context
 }

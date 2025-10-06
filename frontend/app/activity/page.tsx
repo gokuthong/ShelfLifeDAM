@@ -1,313 +1,136 @@
 'use client'
 
-import { useState, useEffect } from 'react'
+import { Box, VStack, HStack, Text, Heading, Badge } from '@chakra-ui/react'
 import { AppLayout } from '@/components/Layout/AppLayout'
-import {
-  Box,
-  Stack,
-  Text,
-  Card,
-  Badge,
-  Table,
-  Avatar,
-  Button,
-  Select,
-  Input,
-  Spinner,
-  Center,
-} from '@chakra-ui/react'
-import { format } from 'date-fns'
-import { getActivityLogs } from '@/services/api'
-import { useAuth } from '@/contexts/AuthContext'
-
-interface ActivityLog {
-  id: number
-  user: {
-    username: string
-    email: string
-  }
-  action: string
-  asset_title?: string
-  asset_id?: number
-  timestamp: string
-  details?: any
-  ip_address?: string
-}
+import { Upload, Download, Edit, Trash2, Eye } from 'lucide-react'
+import { useAssets } from '@/hooks/useAssets'
+import { formatDate } from '@/utils/format'
 
 export default function ActivityPage() {
-  const { user } = useAuth()
-  const [activities, setActivities] = useState<ActivityLog[]>([])
-  const [isLoading, setIsLoading] = useState(true)
-  const [filter, setFilter] = useState({
-    action: 'all',
-    user: '',
-    dateFrom: '',
-    dateTo: '',
-  })
-  const [page, setPage] = useState(1)
-  const [totalPages, setTotalPages] = useState(1)
+  const { data: assetsData, isLoading } = useAssets({ ordering: '-created_at' })
 
-  useEffect(() => {
-    fetchActivities()
-  }, [page, filter])
+  // Mock activity data - in a real app, this would come from an activity log API
+  const getActivities = () => {
+    if (!assetsData?.results) return []
 
-  const fetchActivities = async () => {
-    setIsLoading(true)
-    try {
-      const params = new URLSearchParams()
-      params.append('page', page.toString())
+    return assetsData.results.slice(0, 20).map(asset => ({
+      id: asset.asset_id,
+      type: 'upload',
+      user: asset.user.username,
+      asset: asset.title,
+      timestamp: asset.created_at,
+      icon: Upload,
+      color: 'blue',
+    }))
+  }
 
-      if (filter.action !== 'all') params.append('action', filter.action)
-      if (filter.user) params.append('user', filter.user)
-      if (filter.dateFrom) params.append('date_from', filter.dateFrom)
-      if (filter.dateTo) params.append('date_to', filter.dateTo)
+  const activities = getActivities()
 
-      const response = await getActivityLogs(params.toString())
-      setActivities(response.data.results || [])
-      setTotalPages(Math.ceil(response.data.count / 20))
-    } catch (error) {
-      console.error('Failed to fetch activities:', error)
-      setActivities([])
-    } finally {
-      setIsLoading(false)
+  const getActionIcon = (type: string) => {
+    switch (type) {
+      case 'upload': return Upload
+      case 'download': return Download
+      case 'edit': return Edit
+      case 'delete': return Trash2
+      case 'view': return Eye
+      default: return Upload
     }
   }
 
-  const getActionIcon = (action: string) => {
-    switch (action) {
-      case 'upload': return '⬆️'
-      case 'download': return '⬇️'
-      case 'edit': return '✏️'
-      case 'delete': return '🗑️'
-      case 'view': return '👁️'
-      case 'share': return '🔗'
-      case 'login': return '🔐'
-      case 'logout': return '🚪'
-      default: return '📝'
-    }
-  }
-
-  const getActionBadgeColor = (action: string) => {
-    switch (action) {
-      case 'upload': return 'green'
-      case 'download': return 'blue'
-      case 'edit': return 'yellow'
+  const getActionColor = (type: string) => {
+    switch (type) {
+      case 'upload': return 'blue'
+      case 'download': return 'green'
+      case 'edit': return 'orange'
       case 'delete': return 'red'
       case 'view': return 'gray'
-      case 'share': return 'purple'
-      case 'login': return 'teal'
-      case 'logout': return 'orange'
       default: return 'gray'
     }
   }
 
   return (
     <AppLayout>
-      <Stack spacing={6}>
+      <VStack align="stretch" gap={6}>
         <Box>
-          <Text fontSize="2xl" fontWeight="bold">
+          <Heading size="lg" mb={2}>
             Activity Log
-          </Text>
-          <Text color={{ base: "gray.600", _dark: "gray.400" }}>
-            Track user actions and system events
+          </Heading>
+          <Text color="gray.600">
+            Track all actions and changes made to your digital assets
           </Text>
         </Box>
 
-        {/* Filters */}
-        <Card.Root>
-          <Card.Body>
-            <Stack direction={{ base: "column", md: "row" }} spacing={4}>
-              <Box flex={1}>
+        {isLoading ? (
+          <VStack gap={3}>
+            {[1, 2, 3, 4, 5].map(i => (
+              <Box
+                key={i}
+                height="80px"
+                bg="gray.100"
+                rounded="md"
+                w="full"
+              />
+            ))}
+          </VStack>
+        ) : activities.length > 0 ? (
+          <VStack align="stretch" gap={3}>
+            {activities.map((activity) => {
+              const Icon = getActionIcon(activity.type)
+              const color = getActionColor(activity.type)
+
+              return (
                 <Box
-                  as="select"
-                  value={filter.action}
-                  onChange={(e) => setFilter(prev => ({
-                    ...prev,
-                    action: (e.target as HTMLSelectElement).value
-                  }))}
-                  w="full"
-                  p={2}
+                  key={activity.id}
+                  p={4}
+                  bg="white"
                   border="1px"
-                  borderColor={{ base: "gray.300", _dark: "gray.600" }}
+                  borderColor="gray.200"
                   borderRadius="md"
-                  bg={{ base: "white", _dark: "gray.800" }}
+                  transition="all 0.2s"
+                  _hover={{ boxShadow: 'sm', borderColor: 'blue.300' }}
                 >
-                  <option value="all">All Actions</option>
-                  <option value="upload">Uploads</option>
-                  <option value="download">Downloads</option>
-                  <option value="edit">Edits</option>
-                  <option value="delete">Deletions</option>
-                  <option value="view">Views</option>
-                  <option value="share">Shares</option>
-                  <option value="login">Logins</option>
-                </Box>
-              </Box>
+                  <HStack justify="space-between">
+                    <HStack gap={4} flex={1}>
+                      <Box
+                        p={2}
+                        bg={`${color}.50`}
+                        borderRadius="md"
+                      >
+                        <Icon size={20} color={color} />
+                      </Box>
 
-              <Box flex={1}>
-                <Input
-                  placeholder="Filter by username"
-                  value={filter.user}
-                  onChange={(e) => setFilter(prev => ({
-                    ...prev,
-                    user: e.target.value
-                  }))}
-                />
-              </Box>
-
-              <Box flex={1}>
-                <Input
-                  type="date"
-                  placeholder="From date"
-                  value={filter.dateFrom}
-                  onChange={(e) => setFilter(prev => ({
-                    ...prev,
-                    dateFrom: e.target.value
-                  }))}
-                />
-              </Box>
-
-              <Box flex={1}>
-                <Input
-                  type="date"
-                  placeholder="To date"
-                  value={filter.dateTo}
-                  onChange={(e) => setFilter(prev => ({
-                    ...prev,
-                    dateTo: e.target.value
-                  }))}
-                />
-              </Box>
-
-              <Button
-                onClick={() => {
-                  setFilter({
-                    action: 'all',
-                    user: '',
-                    dateFrom: '',
-                    dateTo: '',
-                  })
-                  setPage(1)
-                }}
-                variant="outline"
-              >
-                Clear
-              </Button>
-            </Stack>
-          </Card.Body>
-        </Card.Root>
-
-        {/* Activity Table */}
-        <Card.Root>
-          <Card.Body>
-            {isLoading ? (
-              <Center py={10}>
-                <Spinner size="xl" color="blue.500" />
-              </Center>
-            ) : activities.length === 0 ? (
-              <Center py={10}>
-                <Stack spacing={3} align="center">
-                  <Text fontSize="4xl">📝</Text>
-                  <Text fontSize="lg" fontWeight="medium">
-                    No activity found
-                  </Text>
-                  <Text color={{ base: "gray.600", _dark: "gray.400" }}>
-                    Activities will appear here as users interact with the system
-                  </Text>
-                </Stack>
-              </Center>
-            ) : (
-              <Box overflowX="auto">
-                <Table.Root size="sm">
-                  <Table.Header>
-                    <Table.Row>
-                      <Table.ColumnHeader>User</Table.ColumnHeader>
-                      <Table.ColumnHeader>Action</Table.ColumnHeader>
-                      <Table.ColumnHeader>Asset</Table.ColumnHeader>
-                      <Table.ColumnHeader>Timestamp</Table.ColumnHeader>
-                      {user?.is_admin && (
-                        <Table.ColumnHeader>IP Address</Table.ColumnHeader>
-                      )}
-                    </Table.Row>
-                  </Table.Header>
-                  <Table.Body>
-                    {activities.map((activity) => (
-                      <Table.Row key={activity.id}>
-                        <Table.Cell>
-                          <Stack direction="row" align="center" spacing={2}>
-                            <Avatar
-                              size="sm"
-                              name={activity.user.username}
-                            />
-                            <Box>
-                              <Text fontWeight="medium">
-                                {activity.user.username}
-                              </Text>
-                              <Text fontSize="xs" color={{ base: "gray.600", _dark: "gray.400" }}>
-                                {activity.user.email}
-                              </Text>
-                            </Box>
-                          </Stack>
-                        </Table.Cell>
-                        <Table.Cell>
-                          <Badge colorScheme={getActionBadgeColor(activity.action)}>
-                            {getActionIcon(activity.action)} {activity.action}
+                      <VStack align="start" gap={1} flex={1}>
+                        <HStack>
+                          <Text fontWeight="semibold">{activity.user}</Text>
+                          <Badge colorScheme={color} textTransform="capitalize">
+                            {activity.type}
                           </Badge>
-                        </Table.Cell>
-                        <Table.Cell>
-                          {activity.asset_title ? (
-                            <Text>{activity.asset_title}</Text>
-                          ) : (
-                            <Text color={{ base: "gray.400", _dark: "gray.500" }}>-</Text>
-                          )}
-                        </Table.Cell>
-                        <Table.Cell>
-                          <Text fontSize="sm">
-                            {format(new Date(activity.timestamp), 'MMM d, yyyy HH:mm')}
-                          </Text>
-                        </Table.Cell>
-                        {user?.is_admin && (
-                          <Table.Cell>
-                            <Text fontSize="sm" color={{ base: "gray.600", _dark: "gray.400" }}>
-                              {activity.ip_address || '-'}
-                            </Text>
-                          </Table.Cell>
-                        )}
-                      </Table.Row>
-                    ))}
-                  </Table.Body>
-                </Table.Root>
+                        </HStack>
+                        <Text fontSize="sm" color="gray.600">
+                          {activity.asset}
+                        </Text>
+                      </VStack>
+                    </HStack>
 
-                {/* Pagination */}
-                {totalPages > 1 && (
-                  <Stack direction="row" justify="center" align="center" mt={4} spacing={2}>
-                    <Button
-                      size="sm"
-                      variant="outline"
-                      onClick={() => setPage(prev => Math.max(1, prev - 1))}
-                      disabled={page === 1}
-                    >
-                      Previous
-                    </Button>
-
-                    <Text fontSize="sm">
-                      Page {page} of {totalPages}
+                    <Text fontSize="sm" color="gray.500" whiteSpace="nowrap">
+                      {formatDate(activity.timestamp)}
                     </Text>
-
-                    <Button
-                      size="sm"
-                      variant="outline"
-                      onClick={() => setPage(prev => Math.min(totalPages, prev + 1))}
-                      disabled={page === totalPages}
-                    >
-                      Next
-                    </Button>
-                  </Stack>
-                )}
-              </Box>
-            )}
-          </Card.Body>
-        </Card.Root>
-      </Stack>
+                  </HStack>
+                </Box>
+              )
+            })}
+          </VStack>
+        ) : (
+          <Box textAlign="center" py={10}>
+            <Text fontSize="lg" color="gray.500" mb={2}>
+              No activity yet
+            </Text>
+            <Text color="gray.600">
+              Activity will appear here as you and your team work with assets
+            </Text>
+          </Box>
+        )}
+      </VStack>
     </AppLayout>
   )
 }
