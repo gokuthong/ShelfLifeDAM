@@ -49,19 +49,67 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
       localStorage.setItem('refreshToken', response.refresh)
       router.push('/dashboard')
     } catch (error: any) {
-      throw new Error(error.response?.data?.error || 'Login failed')
+      console.error('Login error:', error)
+      // Better error handling
+      const errorMessage =
+        error.response?.data?.detail ||
+        error.response?.data?.error ||
+        error.response?.data?.message ||
+        error.message ||
+        'Login failed. Please check your credentials.'
+      throw new Error(errorMessage)
     }
   }
 
   const register = async (data: RegisterData) => {
     try {
+      console.log('Attempting registration with data:', { ...data, password: '***', password2: '***' })
       const response = await authAPI.register(data)
+      console.log('Registration response:', response)
       setUser(response.user)
       localStorage.setItem('accessToken', response.access)
       localStorage.setItem('refreshToken', response.refresh)
       router.push('/dashboard')
     } catch (error: any) {
-      throw new Error(error.response?.data?.error || 'Registration failed')
+      console.error('Registration error details:', {
+        response: error.response?.data,
+        status: error.response?.status,
+        message: error.message
+      })
+
+      // Handle different error formats
+      let errorMessage = 'Registration failed. Please try again.'
+
+      if (error.response?.data) {
+        const errorData = error.response.data
+
+        // Check for field-specific errors
+        if (typeof errorData === 'object') {
+          const errors = []
+          for (const [field, messages] of Object.entries(errorData)) {
+            if (Array.isArray(messages)) {
+              errors.push(`${field}: ${messages.join(', ')}`)
+            } else if (typeof messages === 'string') {
+              errors.push(`${field}: ${messages}`)
+            }
+          }
+          if (errors.length > 0) {
+            errorMessage = errors.join('; ')
+          }
+        } else if (typeof errorData === 'string') {
+          errorMessage = errorData
+        } else if (errorData.detail) {
+          errorMessage = errorData.detail
+        } else if (errorData.error) {
+          errorMessage = errorData.error
+        } else if (errorData.message) {
+          errorMessage = errorData.message
+        }
+      } else if (error.message) {
+        errorMessage = error.message
+      }
+
+      throw new Error(errorMessage)
     }
   }
 
@@ -77,7 +125,14 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
       const updatedUser = await authAPI.updateProfile(data)
       setUser(updatedUser)
     } catch (error: any) {
-      throw new Error(error.response?.data?.error || 'Profile update failed')
+      console.error('Profile update error:', error)
+      const errorMessage =
+        error.response?.data?.detail ||
+        error.response?.data?.error ||
+        error.response?.data?.message ||
+        error.message ||
+        'Profile update failed'
+      throw new Error(errorMessage)
     }
   }
 

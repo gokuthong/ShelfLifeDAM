@@ -15,26 +15,13 @@ import NextLink from 'next/link'
 import { useAuth } from '@/contexts/AuthContext'
 import { useRouter } from 'next/navigation'
 
-const showToast = (options: {
-  title: string
-  description?: string
-  status: 'success' | 'error' | 'warning' | 'info'
-}) => {
-  if (options.status === 'error') {
-    alert(`Error: ${options.title}${options.description ? ` - ${options.description}` : ''}`)
-  } else if (options.status === 'success') {
-    alert(`Success: ${options.title}`)
-  } else {
-    alert(`${options.title}${options.description ? ` - ${options.description}` : ''}`)
-  }
-}
-
 export default function LoginPage() {
   const [formData, setFormData] = useState({
     username: '',
     password: '',
   })
   const [isLoading, setIsLoading] = useState(false)
+  const [error, setError] = useState<string | null>(null)
 
   const { login } = useAuth()
   const router = useRouter()
@@ -44,25 +31,21 @@ export default function LoginPage() {
       ...prev,
       [e.target.name]: e.target.value,
     }))
+    // Clear error when user starts typing
+    if (error) setError(null)
   }
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault()
+    setError(null)
     setIsLoading(true)
 
     try {
       await login(formData)
-      showToast({
-        title: 'Login successful',
-        status: 'success',
-      })
       router.push('/dashboard')
     } catch (error: any) {
-      showToast({
-        title: 'Login failed',
-        description: error.message,
-        status: 'error',
-      })
+      console.error('Login error:', error)
+      setError(error.message || 'Login failed. Please check your credentials.')
     } finally {
       setIsLoading(false)
     }
@@ -78,7 +61,7 @@ export default function LoginPage() {
         border="1px"
         borderColor="gray.200"
       >
-        <VStack spacing={6}>
+        <VStack gap={6}>
           <Heading size="lg" textAlign="center">
             Welcome to ShelfLifeDAM
           </Heading>
@@ -86,8 +69,23 @@ export default function LoginPage() {
             Sign in to your account
           </Text>
 
+          {error && (
+            <Box
+              w="full"
+              p={4}
+              bg="red.50"
+              border="1px"
+              borderColor="red.200"
+              borderRadius="md"
+            >
+              <Text color="red.700" fontSize="sm">
+                {error}
+              </Text>
+            </Box>
+          )}
+
           <Box as="form" onSubmit={handleSubmit} w="full">
-            <VStack spacing={4}>
+            <VStack gap={4}>
               <Box w="full">
                 <Text mb={2} fontWeight="medium">Username</Text>
                 <Input
@@ -118,19 +116,18 @@ export default function LoginPage() {
                 type="submit"
                 colorScheme="blue"
                 w="full"
-                isLoading={isLoading}
-                loadingText="Signing in..."
+                loading={isLoading}
                 size="lg"
               >
-                Sign In
+                {isLoading ? 'Signing in...' : 'Sign In'}
               </Button>
             </VStack>
           </Box>
 
           <Text textAlign="center">
             Don't have an account?{' '}
-            <Link as={NextLink} href="/register" color="blue.500">
-              Sign up
+            <Link asChild color="blue.500">
+              <NextLink href="/register">Sign up</NextLink>
             </Link>
           </Text>
         </VStack>

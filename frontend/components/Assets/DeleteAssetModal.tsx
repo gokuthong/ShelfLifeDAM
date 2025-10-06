@@ -12,6 +12,7 @@ import {
   Text,
   VStack,
   HStack,
+  Box,
 } from '@chakra-ui/react'
 import { Asset } from '@/types'
 import { formatFileSize } from '@/utils/format'
@@ -30,13 +31,13 @@ export function DeleteAssetModal({ isOpen, onClose, asset, onDelete }: DeleteAss
   }
 
   return (
-    <Modal isOpen={isOpen} onClose={onClose}>
+    <Modal open={isOpen} onOpenChange={(e) => !e.open && onClose()}>
       <ModalOverlay />
       <ModalContent>
         <ModalHeader>Delete Asset</ModalHeader>
         <ModalCloseButton />
         <ModalBody>
-          <VStack align="stretch" spacing={4}>
+          <VStack align="stretch" gap={4}>
             <Text>
               Are you sure you want to delete this asset? This action cannot be undone.
             </Text>
@@ -51,8 +52,8 @@ export function DeleteAssetModal({ isOpen, onClose, asset, onDelete }: DeleteAss
           </VStack>
         </ModalBody>
 
-        <ModalFooter>
-          <Button variant="outline" mr={3} onClick={onClose}>
+        <ModalFooter gap={3}>
+          <Button variant="outline" onClick={onClose}>
             Cancel
           </Button>
           <Button colorScheme="red" onClick={handleDelete}>

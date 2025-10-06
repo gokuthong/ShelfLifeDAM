@@ -11,7 +11,6 @@ class User(AbstractUser):
 
     role = models.CharField(max_length=10, choices=ROLE_CHOICES, default='viewer')
     profile_info = models.TextField(blank=True, null=True)
-    date_joined = models.DateTimeField(auto_now_add=True)
 
     class Meta:
         db_table = 'users'

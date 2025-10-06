@@ -8,17 +8,14 @@ import {
   HStack,
   Badge,
   IconButton,
-  Menu,
-  MenuButton,
-  MenuList,
-  MenuItem,
-  useDisclosure,
+  Button,
 } from '@chakra-ui/react'
-import { HamburgerIcon, DownloadIcon, EditIcon, DeleteIcon } from '@chakra-ui/icons'
+import { Download, Edit, Trash2, Eye } from 'lucide-react'
 import Link from 'next/link'
 import { Asset } from '@/types'
 import { formatFileSize, formatDate, getFileIcon, isImageFile } from '@/utils/format'
 import { useAuth } from '@/contexts/AuthContext'
+import { useState } from 'react'
 import { DeleteAssetModal } from './DeleteAssetModal'
 
 interface AssetCardProps {
@@ -28,13 +25,25 @@ interface AssetCardProps {
 
 export function AssetCard({ asset, onDelete }: AssetCardProps) {
   const { user } = useAuth()
-  const { isOpen, onOpen, onClose } = useDisclosure()
+  const [isDeleteModalOpen, setIsDeleteModalOpen] = useState(false)
+  const [showActions, setShowActions] = useState(false)
 
   const canEdit = user?.is_admin || (user?.is_editor && asset.user.id === user.id)
   const canDelete = user?.is_admin || (user?.is_editor && asset.user.id === user.id)
 
   const handleDownload = () => {
     window.open(asset.file_url, '_blank')
+  }
+
+  const handleDeleteClick = () => {
+    setIsDeleteModalOpen(true)
+  }
+
+  const handleDeleteConfirm = () => {
+    if (onDelete) {
+      onDelete()
+    }
+    setIsDeleteModalOpen(false)
   }
 
   return (
@@ -48,6 +57,8 @@ export function AssetCard({ asset, onDelete }: AssetCardProps) {
         boxShadow="sm"
         transition="all 0.2s"
         _hover={{ boxShadow: 'md', transform: 'translateY(-2px)' }}
+        onMouseEnter={() => setShowActions(true)}
+        onMouseLeave={() => setShowActions(false)}
       >
         <Box position="relative">
           {isImageFile(asset.file_type) ? (
@@ -72,62 +83,68 @@ export function AssetCard({ asset, onDelete }: AssetCardProps) {
             </Box>
           )}
 
-          <Box position="absolute" top={2} right={2}>
-            <Menu>
-              <MenuButton
-                as={IconButton}
-                aria-label="Options"
-                icon={<HamburgerIcon />}
-                variant="solid"
+          {showActions && (
+            <Box
+              position="absolute"
+              top={2}
+              right={2}
+              display="flex"
+              gap={2}
+              bg="white"
+              p={2}
+              rounded="md"
+              boxShadow="md"
+            >
+              <IconButton
+                aria-label="View"
                 size="sm"
-                bg="white"
-                _hover={{ bg: 'gray.100' }}
-              />
-              <MenuList>
-                <MenuItem
-                  as={Link}
-                  href={`/assets/${asset.asset_id}`}
-                  icon={<EditIcon />}
+                onClick={() => window.open(`/assets/${asset.asset_id}`, '_self')}
+              >
+                <Eye size={16} />
+              </IconButton>
+
+              <IconButton
+                aria-label="Download"
+                size="sm"
+                onClick={handleDownload}
+              >
+                <Download size={16} />
+              </IconButton>
+
+              {canEdit && (
+                <IconButton
+                  aria-label="Edit"
+                  size="sm"
+                  onClick={() => window.open(`/assets/${asset.asset_id}/edit`, '_self')}
                 >
-                  View Details
-                </MenuItem>
-                <MenuItem
-                  icon={<DownloadIcon />}
-                  onClick={handleDownload}
+                  <Edit size={16} />
+                </IconButton>
+              )}
+
+              {canDelete && (
+                <IconButton
+                  aria-label="Delete"
+                  size="sm"
+                  colorScheme="red"
+                  onClick={handleDeleteClick}
                 >
-                  Download
-                </MenuItem>
-                {canEdit && (
-                  <MenuItem
-                    as={Link}
-                    href={`/assets/${asset.asset_id}/edit`}
-                    icon={<EditIcon />}
-                  >
-                    Edit
-                  </MenuItem>
-                )}
-                {canDelete && (
-                  <MenuItem
-                    icon={<DeleteIcon />}
-                    color="red.500"
-                    onClick={onOpen}
-                  >
-                    Delete
-                  </MenuItem>
-                )}
-              </MenuList>
-            </Menu>
-          </Box>
+                  <Trash2 size={16} />
+                </IconButton>
+              )}
+            </Box>
+          )}
         </Box>
 
-        <VStack align="stretch" p={4} spacing={2}>
+        <VStack align="stretch" p={4} gap={2}>
           <Text fontWeight="semibold" fontSize="sm" noOfLines={2}>
             {asset.title}
           </Text>
 
-          <Text fontSize="xs" color="gray.600" noOfLines={2}>
-            {asset.description}
-          </Text>
+          {asset.description && (
+            <Text fontSize="xs" color="gray.600" noOfLines={2}>
+              {asset.description}
+            </Text>
+          )}
 
           <HStack justify="space-between" fontSize="xs">
             <Badge colorScheme="blue" textTransform="lowercase">
@@ -138,8 +155,8 @@ export function AssetCard({ asset, onDelete }: AssetCardProps) {
             </Text>
           </HStack>
 
-          {asset.tags.length > 0 && (
-            <HStack spacing={1} flexWrap="wrap">
+          {asset.tags && asset.tags.length > 0 && (
+            <HStack gap={1} flexWrap="wrap">
               {asset.tags.slice(0, 3).map((tag, index) => (
                 <Badge key={index} variant="subtle" colorScheme="gray" fontSize="2xs">
                   {tag}
@@ -160,10 +177,10 @@ export function AssetCard({ asset, onDelete }: AssetCardProps) {
       </Box>
 
       <DeleteAssetModal
-        isOpen={isOpen}
-        onClose={onClose}
+        isOpen={isDeleteModalOpen}
+        onClose={() => setIsDeleteModalOpen(false)}
         asset={asset}
-        onDelete={onDelete}
+        onDelete={handleDeleteConfirm}
       />
     </>
   )

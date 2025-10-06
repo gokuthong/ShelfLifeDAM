@@ -5,7 +5,6 @@ import {
   VStack,
   Link,
   Text,
-  Icon,
   Flex,
 } from '@chakra-ui/react'
 import { useAuth } from '@/contexts/AuthContext'
@@ -39,33 +38,32 @@ export function Sidebar() {
       minH="calc(100vh - 64px)"
       p={4}
     >
-      <VStack align="stretch" spacing={2}>
+      <VStack align="stretch" gap={2}>
         {filteredMenuItems.map((item) => {
           const isActive = pathname === item.href
           return (
             <Link
-              as={NextLink}
+              asChild
               key={item.href}
-              href={item.href}
-              display="flex"
-              alignItems="center"
-              px={3}
-              py={2}
-              rounded="md"
-              bg={isActive ? 'blue.50' : 'transparent'}
-              color={isActive ? 'blue.700' : 'gray.700'}
-              border={isActive ? '1px' : 'none'}
-              borderColor="blue.200"
-              _hover={{
-                bg: 'blue.50',
-                color: 'blue.700',
-                textDecoration: 'none',
-              }}
             >
-              <Text mr={3}>{item.icon}</Text>
-              <Text fontWeight={isActive ? 'semibold' : 'normal'}>
-                {item.label}
-              </Text>
+              <NextLink
+                href={item.href}
+                style={{
+                  display: 'flex',
+                  alignItems: 'center',
+                  padding: '0.5rem 0.75rem',
+                  borderRadius: '0.375rem',
+                  backgroundColor: isActive ? '#EBF8FF' : 'transparent',
+                  color: isActive ? '#2C5282' : '#4A5568',
+                  border: isActive ? '1px solid #90CDF4' : 'none',
+                  textDecoration: 'none',
+                }}
+              >
+                <Text mr={3}>{item.icon}</Text>
+                <Text fontWeight={isActive ? 'semibold' : 'normal'}>
+                  {item.label}
+                </Text>
+              </NextLink>
             </Link>
           )
         })}

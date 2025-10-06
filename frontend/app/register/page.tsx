@@ -15,20 +15,6 @@ import NextLink from 'next/link'
 import { useAuth } from '@/contexts/AuthContext'
 import { useRouter } from 'next/navigation'
 
-const showToast = (options: {
-  title: string
-  description?: string
-  status: 'success' | 'error' | 'warning' | 'info'
-}) => {
-  if (options.status === 'error') {
-    alert(`Error: ${options.title}${options.description ? ` - ${options.description}` : ''}`)
-  } else if (options.status === 'success') {
-    alert(`Success: ${options.title}`)
-  } else {
-    alert(`${options.title}${options.description ? ` - ${options.description}` : ''}`)
-  }
-}
-
 export default function RegisterPage() {
   const [formData, setFormData] = useState({
     username: '',
@@ -41,6 +27,8 @@ export default function RegisterPage() {
     profile_info: '',
   })
   const [isLoading, setIsLoading] = useState(false)
+  const [error, setError] = useState<string | null>(null)
+  const [validationErrors, setValidationErrors] = useState<Record<string, string>>({})
 
   const { register } = useAuth()
   const router = useRouter()
@@ -51,37 +39,69 @@ export default function RegisterPage() {
       ...prev,
       [name]: value,
     }))
+    // Clear field-specific error when user starts typing
+    if (validationErrors[name]) {
+      setValidationErrors(prev => {
+        const newErrors = { ...prev }
+        delete newErrors[name]
+        return newErrors
+      })
+    }
+  }
+
+  const validateForm = () => {
+    const errors: Record<string, string> = {}
+
+    if (!formData.username.trim()) {
+      errors.username = 'Username is required'
+    } else if (formData.username.length < 3) {
+      errors.username = 'Username must be at least 3 characters'
+    }
+
+    if (!formData.email.trim()) {
+      errors.email = 'Email is required'
+    } else if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(formData.email)) {
+      errors.email = 'Please enter a valid email address'
+    }
+
+    if (!formData.password) {
+      errors.password = 'Password is required'
+    } else if (formData.password.length < 8) {
+      errors.password = 'Password must be at least 8 characters'
+    }
+
+    if (!formData.password2) {
+      errors.password2 = 'Please confirm your password'
+    } else if (formData.password !== formData.password2) {
+      errors.password2 = 'Passwords do not match'
+    }
+
+    setValidationErrors(errors)
+    return Object.keys(errors).length === 0
   }
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault()
-    setIsLoading(true)
+    setError(null)
+    setValidationErrors({})
 
-    // Check if passwords match
-    if (formData.password !== formData.password2) {
-      showToast({
-        title: 'Registration failed',
-        description: 'Passwords do not match',
-        status: 'error',
-      })
-      setIsLoading(false)
+    // Client-side validation
+    if (!validateForm()) {
       return
     }
 
+    setIsLoading(true)
+
     try {
+      console.log('Submitting registration...')
       await register(formData)
-      showToast({
-        title: 'Registration successful',
-        description: 'You can now log in with your credentials',
-        status: 'success',
-      })
-      router.push('/login')
+      // Success - will be redirected by the context
     } catch (error: any) {
-      showToast({
-        title: 'Registration failed',
-        description: error.message,
-        status: 'error',
-      })
+      console.error('Registration error caught in component:', error)
+      setError(error.message || 'Registration failed. Please try again.')
+
+      // Scroll to top to show error
+      window.scrollTo({ top: 0, behavior: 'smooth' })
     } finally {
       setIsLoading(false)
     }
@@ -97,7 +117,7 @@ export default function RegisterPage() {
         border="1px"
         borderColor="gray.200"
       >
-        <VStack spacing={6}>
+        <VStack gap={6}>
           <Heading size="lg" textAlign="center">
             Create Account
           </Heading>
@@ -105,8 +125,23 @@ export default function RegisterPage() {
             Join ShelfLifeDAM to manage your digital assets
           </Text>
 
+          {error && (
+            <Box
+              w="full"
+              p={4}
+              bg="red.50"
+              border="1px"
+              borderColor="red.200"
+              borderRadius="md"
+            >
+              <Text color="red.700" fontSize="sm">
+                {error}
+              </Text>
+            </Box>
+          )}
+
           <Box as="form" onSubmit={handleSubmit} w="full">
-            <VStack spacing={4}>
+            <VStack gap={4}>
               {/* Username */}
               <Box w="full">
                 <Text mb={2} fontWeight="medium">Username *</Text>
@@ -118,7 +153,13 @@ export default function RegisterPage() {
                   placeholder="Choose a username"
                   required
                   size="lg"
+                  borderColor={validationErrors.username ? 'red.300' : 'gray.300'}
                 />
+                {validationErrors.username && (
+                  <Text color="red.500" fontSize="sm" mt={1}>
+                    {validationErrors.username}
+                  </Text>
+                )}
               </Box>
 
               {/* Email */}
@@ -132,7 +173,13 @@ export default function RegisterPage() {
                   placeholder="Enter your email"
                   required
                   size="lg"
+                  borderColor={validationErrors.email ? 'red.300' : 'gray.300'}
                 />
+                {validationErrors.email && (
+                  <Text color="red.500" fontSize="sm" mt={1}>
+                    {validationErrors.email}
+                  </Text>
+                )}
               </Box>
 
               {/* First Name */}
@@ -161,7 +208,7 @@ export default function RegisterPage() {
                 />
               </Box>
 
-              {/* Role - Using HTML select instead of Chakra UI Select */}
+              {/* Role */}
               <Box w="full">
                 <Text mb={2} fontWeight="medium">Role *</Text>
                 <Box
@@ -197,10 +244,16 @@ export default function RegisterPage() {
                   type="password"
                   value={formData.password}
                   onChange={handleChange}
-                  placeholder="Create a password"
+                  placeholder="Create a password (min. 8 characters)"
                   required
                   size="lg"
+                  borderColor={validationErrors.password ? 'red.300' : 'gray.300'}
                 />
+                {validationErrors.password && (
+                  <Text color="red.500" fontSize="sm" mt={1}>
+                    {validationErrors.password}
+                  </Text>
+                )}
               </Box>
 
               {/* Confirm Password */}
@@ -214,7 +267,13 @@ export default function RegisterPage() {
                   placeholder="Confirm your password"
                   required
                   size="lg"
+                  borderColor={validationErrors.password2 ? 'red.300' : 'gray.300'}
                 />
+                {validationErrors.password2 && (
+                  <Text color="red.500" fontSize="sm" mt={1}>
+                    {validationErrors.password2}
+                  </Text>
+                )}
               </Box>
 
               {/* Profile Info */}
@@ -241,19 +300,18 @@ export default function RegisterPage() {
                 type="submit"
                 colorScheme="blue"
                 w="full"
-                isLoading={isLoading}
-                loadingText="Creating account..."
+                loading={isLoading}
                 size="lg"
               >
-                Create Account
+                {isLoading ? 'Creating account...' : 'Create Account'}
               </Button>
             </VStack>
           </Box>
 
           <Text textAlign="center">
             Already have an account?{' '}
-            <Link as={NextLink} href="/login" color="blue.500">
-              Sign in
+            <Link asChild color="blue.500">
+              <NextLink href="/login">Sign in</NextLink>
             </Link>
           </Text>
         </VStack>

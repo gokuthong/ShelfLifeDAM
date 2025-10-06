@@ -1,201 +1,218 @@
 'use client'
 
-import { useCallback, useState } from 'react'
+import { useState } from 'react'
 import {
   Box,
   VStack,
+  HStack,
   Text,
   Button,
-  useToast,
-  Progress,
-  HStack,
-  Icon,
+  Input,
+  Grid,
 } from '@chakra-ui/react'
-import { useDropzone } from 'react-dropzone'
-import { useCreateAsset } from '@/hooks/useAssets'
-
-interface UploadFile {
-  file: File
-  progress: number
-  status: 'pending' | 'uploading' | 'completed' | 'error'
-  error?: string
-}
+import { Upload, X, FileText } from 'lucide-react'
+import { useRouter } from 'next/navigation'
+import { assetsAPI } from '@/utils/api'
 
 export function AssetUpload() {
-  const [files, setFiles] = useState<UploadFile[]>([])
-  const createAsset = useCreateAsset()
-  const toast = useToast()
+  const [files, setFiles] = useState<File[]>([])
+  const [isUploading, setIsUploading] = useState(false)
+  const [uploadStatus, setUploadStatus] = useState<{ type: 'success' | 'error', message: string } | null>(null)
+  const router = useRouter()
 
-  const onDrop = useCallback((acceptedFiles: File[]) => {
-    const newFiles = acceptedFiles.map(file => ({
-      file,
-      progress: 0,
-      status: 'pending' as const,
-    }))
-    setFiles(prev => [...prev, ...newFiles])
-
-    // Start uploading files
-    newFiles.forEach(uploadFile => {
-      handleUpload(uploadFile.file)
-    })
-  }, [])
-
-  const { getRootProps, getInputProps, isDragActive } = useDropzone({
-    onDrop,
-    multiple: true,
-    maxSize: 100 * 1024 * 1024, // 100MB
-  })
-
-  const handleUpload = async (file: File) => {
-    const formData = new FormData()
-    formData.append('file', file)
-    formData.append('title', file.name)
-    formData.append('description', `Uploaded ${new Date().toLocaleDateString()}`)
-
-    setFiles(prev =>
-      prev.map(f =>
-        f.file === file ? { ...f, status: 'uploading', progress: 0 } : f
-      )
-    )
-
-    try {
-      // Simulate progress for better UX
-      const progressInterval = setInterval(() => {
-        setFiles(prev =>
-          prev.map(f =>
-            f.file === file
-              ? { ...f, progress: Math.min(f.progress + 10, 90) }
-              : f
-          )
-        )
-      }, 200)
-
-      await createAsset.mutateAsync(formData)
-
-      clearInterval(progressInterval)
-
-      setFiles(prev =>
-        prev.map(f =>
-          f.file === file
-            ? { ...f, status: 'completed', progress: 100 }
-            : f
-        )
-      )
-
-      toast({
-        title: 'Upload successful',
-        description: `${file.name} has been uploaded.`,
-        status: 'success',
-        duration: 3000,
-      })
-    } catch (error) {
-      setFiles(prev =>
-        prev.map(f =>
-          f.file === file
-            ? { ...f, status: 'error', error: 'Upload failed' }
-            : f
-        )
-      )
-
-      toast({
-        title: 'Upload failed',
-        description: `Failed to upload ${file.name}.`,
-        status: 'error',
-        duration: 5000,
-      })
+  const handleFileSelect = (e: React.ChangeEvent<HTMLInputElement>) => {
+    if (e.target.files) {
+      const newFiles = Array.from(e.target.files)
+      setFiles(prev => [...prev, ...newFiles])
     }
   }
 
-  const removeFile = (fileToRemove: File) => {
-    setFiles(prev => prev.filter(f => f.file !== fileToRemove))
+  const handleDrop = (e: React.DragEvent<HTMLDivElement>) => {
+    e.preventDefault()
+    if (e.dataTransfer.files) {
+      const newFiles = Array.from(e.dataTransfer.files)
+      setFiles(prev => [...prev, ...newFiles])
+    }
+  }
+
+  const handleDragOver = (e: React.DragEvent<HTMLDivElement>) => {
+    e.preventDefault()
+  }
+
+  const removeFile = (index: number) => {
+    setFiles(prev => prev.filter((_, i) => i !== index))
+  }
+
+  const formatFileSize = (bytes: number) => {
+    if (bytes === 0) return '0 Bytes'
+    const k = 1024
+    const sizes = ['Bytes', 'KB', 'MB', 'GB']
+    const i = Math.floor(Math.log(bytes) / Math.log(k))
+    return Math.round(bytes / Math.pow(k, i) * 100) / 100 + ' ' + sizes[i]
+  }
+
+  const handleUpload = async () => {
+    if (files.length === 0) {
+      setUploadStatus({ type: 'error', message: 'Please select files to upload' })
+      return
+    }
+
+    setIsUploading(true)
+    setUploadStatus(null)
+
+    try {
+      const uploadPromises = files.map(async (file) => {
+        const formData = new FormData()
+        formData.append('file', file)
+        formData.append('title', file.name)
+        formData.append('description', '')
+        formData.append('tags', JSON.stringify([]))
+
+        return assetsAPI.create(formData)
+      })
+
+      await Promise.all(uploadPromises)
+
+      setUploadStatus({
+        type: 'success',
+        message: `Successfully uploaded ${files.length} file${files.length > 1 ? 's' : ''}!`
+      })
+      setFiles([])
+
+      // Redirect to assets page after 2 seconds
+      setTimeout(() => {
+        router.push('/assets')
+      }, 2000)
+    } catch (error: any) {
+      console.error('Upload error:', error)
+      setUploadStatus({
+        type: 'error',
+        message: error.response?.data?.error || 'Upload failed. Please try again.'
+      })
+    } finally {
+      setIsUploading(false)
+    }
   }
 
   return (
-    <VStack spacing={6} align="stretch">
+    <VStack align="stretch" gap={6}>
+      {/* Upload Status */}
+      {uploadStatus && (
+        <Box
+          p={4}
+          bg={uploadStatus.type === 'success' ? 'green.50' : 'red.50'}
+          border="1px"
+          borderColor={uploadStatus.type === 'success' ? 'green.200' : 'red.200'}
+          borderRadius="md"
+        >
+          <Text color={uploadStatus.type === 'success' ? 'green.700' : 'red.700'}>
+            {uploadStatus.message}
+          </Text>
+        </Box>
+      )}
+
+      {/* Drop Zone */}
       <Box
-        {...getRootProps()}
-        border="2px"
-        borderColor={isDragActive ? 'blue.300' : 'gray.300'}
-        borderStyle="dashed"
-        rounded="lg"
-        p={8}
+        border="2px dashed"
+        borderColor="gray.300"
+        borderRadius="lg"
+        p={10}
         textAlign="center"
+        bg="gray.50"
+        onDrop={handleDrop}
+        onDragOver={handleDragOver}
         cursor="pointer"
-        bg={isDragActive ? 'blue.50' : 'gray.50'}
         transition="all 0.2s"
-        _hover={{ bg: 'blue.50', borderColor: 'blue.300' }}
+        _hover={{ borderColor: 'blue.400', bg: 'blue.50' }}
       >
-        <input {...getInputProps()} />
-        <Icon boxSize={12} color="gray.400" mb={4}>
-          <path
-            fill="currentColor"
-            d="M19.35 10.04C18.67 6.59 15.64 4 12 4 9.11 4 6.6 5.64 5.35 8.04 2.34 8.36 0 10.91 0 14c0 3.31 2.69 6 6 6h13c2.76 0 5-2.24 5-5 0-2.64-2.05-4.78-4.65-4.96zM14 13v4h-4v-4H7l5-5 5 5h-3z"
-          />
-        </Icon>
-        <Text fontSize="lg" fontWeight="semibold" mb={2}>
-          {isDragActive ? 'Drop files here' : 'Drag & drop files here'}
-        </Text>
-        <Text fontSize="sm" color="gray.600">
-          or click to select files
-        </Text>
-        <Text fontSize="xs" color="gray.500" mt={2}>
-          Maximum file size: 100MB
-        </Text>
+        <VStack gap={4}>
+          <Upload size={48} color="gray" />
+          <Box>
+            <Text fontSize="lg" fontWeight="semibold" mb={2}>
+              Drag and drop files here
+            </Text>
+            <Text color="gray.600" mb={4}>
+              or
+            </Text>
+            <Button
+              as="label"
+              colorScheme="blue"
+              cursor="pointer"
+            >
+              Browse Files
+              <Input
+                type="file"
+                multiple
+                onChange={handleFileSelect}
+                display="none"
+              />
+            </Button>
+          </Box>
+          <Text fontSize="sm" color="gray.500">
+            Supported: Images, Videos, PDFs, Documents
+          </Text>
+        </VStack>
       </Box>
 
+      {/* Selected Files */}
       {files.length > 0 && (
-        <VStack spacing={3} align="stretch">
-          <Text fontWeight="semibold">Uploading Files</Text>
-          {files.map((uploadFile, index) => (
-            <Box
-              key={index}
-              border="1px"
-              borderColor="gray.200"
-              rounded="md"
-              p={4}
+        <Box>
+          <Text fontWeight="semibold" mb={3}>
+            Selected Files ({files.length})
+          </Text>
+          <Grid templateColumns="repeat(auto-fill, minmax(250px, 1fr))" gap={3}>
+            {files.map((file, index) => (
+              <Box
+                key={index}
+                p={3}
+                border="1px"
+                borderColor="gray.200"
+                borderRadius="md"
+                bg="white"
+              >
+                <HStack justify="space-between">
+                  <HStack flex={1} minW={0}>
+                    <FileText size={20} color="blue" />
+                    <VStack align="start" gap={0} flex={1} minW={0}>
+                      <Text fontSize="sm" fontWeight="medium" noOfLines={1}>
+                        {file.name}
+                      </Text>
+                      <Text fontSize="xs" color="gray.500">
+                        {formatFileSize(file.size)}
+                      </Text>
+                    </VStack>
+                  </HStack>
+                  <Button
+                    size="sm"
+                    variant="ghost"
+                    onClick={() => removeFile(index)}
+                    colorScheme="red"
+                  >
+                    <X size={16} />
+                  </Button>
+                </HStack>
+              </Box>
+            ))}
+          </Grid>
+
+          <HStack mt={6} justify="flex-end" gap={3}>
+            <Button
+              variant="outline"
+              onClick={() => setFiles([])}
+              disabled={isUploading}
             >
-              <HStack justify="space-between" mb={2}>
-                <Text fontSize="sm" noOfLines={1}>
-                  {uploadFile.file.name}
-                </Text>
-                <Button
-                  size="sm"
-                  variant="ghost"
-                  onClick={() => removeFile(uploadFile.file)}
-                >
-                  Remove
-                </Button>
-              </HStack>
-
-              <Progress
-                value={uploadFile.progress}
-                colorScheme={
-                  uploadFile.status === 'completed' ? 'green' :
-                  uploadFile.status === 'error' ? 'red' : 'blue'
-                }
-                size="sm"
-                rounded="full"
-              />
-
-              <HStack justify="space-between" mt={2}>
-                <Text fontSize="xs" color="gray.600">
-                  {uploadFile.status === 'completed' ? 'Completed' :
-                   uploadFile.status === 'error' ? 'Failed' :
-                   uploadFile.status === 'uploading' ? 'Uploading...' : 'Pending'}
-                </Text>
-                <Text fontSize="xs" color="gray.600">
-                  {Math.round(uploadFile.progress)}%
-                </Text>
-              </HStack>
-
-              {uploadFile.error && (
-                <Text fontSize="xs" color="red.500" mt={1}>
-                  {uploadFile.error}
-                </Text>
-              )}
-            </Box>
-          ))}
-        </VStack>
+              Clear All
+            </Button>
+            <Button
+              colorScheme="blue"
+              onClick={handleUpload}
+              loading={isUploading}
+              disabled={isUploading}
+            >
+              {isUploading ? 'Uploading...' : `Upload ${files.length} File${files.length > 1 ? 's' : ''}`}
+            </Button>
+          </HStack>
+        </Box>
       )}
     </VStack>
   )

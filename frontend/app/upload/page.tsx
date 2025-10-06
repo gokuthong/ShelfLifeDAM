@@ -1,37 +1,49 @@
 'use client'
 
+import { Box, VStack, Heading, Text } from '@chakra-ui/react'
 import { AppLayout } from '@/components/Layout/AppLayout'
 import { AssetUpload } from '@/components/Assets/AssetUpload'
-import {
-  Box,
-  VStack,
-  Text,
-  Alert,
-  AlertIcon,
-} from '@chakra-ui/react'
 import { useAuth } from '@/contexts/AuthContext'
+import { useRouter } from 'next/navigation'
+import { useEffect } from 'react'
 
 export default function UploadPage() {
-  const { user } = useAuth()
+  const { user, isLoading } = useAuth()
+  const router = useRouter()
 
-  if (!user?.is_admin && !user?.is_editor) {
+  useEffect(() => {
+    if (!isLoading && user && !user.is_editor && !user.is_admin) {
+      router.push('/dashboard')
+    }
+  }, [user, isLoading, router])
+
+  if (isLoading) {
     return (
       <AppLayout>
-        <Alert status="error">
-          <AlertIcon />
-          You don't have permission to upload assets. Please contact an administrator.
-        </Alert>
+        <Box textAlign="center" py={10}>
+          <Text>Loading...</Text>
+        </Box>
+      </AppLayout>
+    )
+  }
+
+  if (!user?.is_editor && !user?.is_admin) {
+    return (
+      <AppLayout>
+        <Box textAlign="center" py={10}>
+          <Text color="red.500">Access Denied. Editor or Admin role required.</Text>
+        </Box>
       </AppLayout>
     )
   }
 
   return (
     <AppLayout>
-      <VStack align="stretch" spacing={6}>
+      <VStack align="stretch" gap={6}>
         <Box>
-          <Text fontSize="2xl" fontWeight="bold">
+          <Heading size="lg" mb={2}>
             Upload Assets
-          </Text>
+          </Heading>
           <Text color="gray.600">
             Upload images, videos, documents, and other digital assets
           </Text>

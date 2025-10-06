@@ -6,11 +6,9 @@ import {
   VStack,
   HStack,
   Input,
-  Select,
   Button,
   Grid,
   Text,
-  useDisclosure,
 } from '@chakra-ui/react'
 import { AppLayout } from '@/components/Layout/AppLayout'
 import { AssetCard } from '@/components/Assets/AssetCard'
@@ -41,7 +39,7 @@ export default function AssetsPage() {
 
   return (
     <AppLayout>
-      <VStack align="stretch" spacing={6}>
+      <VStack align="stretch" gap={6}>
         <Box>
           <Text fontSize="2xl" fontWeight="bold">
             Asset Library
@@ -52,7 +50,7 @@ export default function AssetsPage() {
         </Box>
 
         {/* Filters */}
-        <HStack spacing={4} wrap="wrap">
+        <HStack gap={4} flexWrap="wrap">
           <Input
             placeholder="Search assets..."
             value={filters.search}
@@ -60,10 +58,16 @@ export default function AssetsPage() {
             maxW="300px"
           />
 
-          <Select
+          <Box
+            as="select"
             value={filters.file_type}
             onChange={(e) => handleFilterChange('file_type', e.target.value)}
             maxW="200px"
+            p={2}
+            border="1px"
+            borderColor="gray.300"
+            borderRadius="md"
+            bg="white"
           >
             <option value="">All Types</option>
             <option value="image">Images</option>
@@ -72,12 +76,18 @@ export default function AssetsPage() {
             <option value="doc">Documents</option>
             <option value="audio">Audio</option>
             <option value="other">Other</option>
-          </Select>
+          </Box>
 
-          <Select
+          <Box
+            as="select"
             value={filters.ordering}
             onChange={(e) => handleFilterChange('ordering', e.target.value)}
             maxW="200px"
+            p={2}
+            border="1px"
+            borderColor="gray.300"
+            borderRadius="md"
+            bg="white"
           >
             <option value="-created_at">Newest First</option>
             <option value="created_at">Oldest First</option>
@@ -85,7 +95,7 @@ export default function AssetsPage() {
             <option value="-title">Title Z-A</option>
             <option value="file_size">Size: Small to Large</option>
             <option value="-file_size">Size: Large to Small</option>
-          </Select>
+          </Box>
         </HStack>
 
         {/* Asset Grid */}
@@ -97,7 +107,6 @@ export default function AssetsPage() {
                 height="300px"
                 bg="gray.100"
                 rounded="lg"
-                animate="pulse"
               />
             ))}
           </Grid>

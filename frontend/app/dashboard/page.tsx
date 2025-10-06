@@ -6,21 +6,12 @@ import {
   Heading,
   Text,
   Grid,
-  GridItem,
-  Stat,
-  StatLabel,
-  StatNumber,
-  StatHelpText,
   Button,
-  useColorModeValue,
 } from '@chakra-ui/react'
 import { AppLayout } from '@/components/Layout/AppLayout'
 import Link from 'next/link'
 
 export default function DashboardPage() {
-  const bgColor = useColorModeValue('white', 'gray.800')
-  const borderColor = useColorModeValue('gray.200', 'gray.600')
-
   // Mock data for now
   const stats = {
     totalAssets: 0,
@@ -31,7 +22,7 @@ export default function DashboardPage() {
 
   return (
     <AppLayout>
-      <VStack align="stretch" spacing={6}>
+      <VStack align="stretch" gap={6}>
         <Box>
           <Heading size="lg" mb={2}>
             Dashboard
@@ -43,54 +34,62 @@ export default function DashboardPage() {
 
         {/* Statistics Grid */}
         <Grid templateColumns="repeat(2, 1fr)" gap={6}>
-          <GridItem>
-            <Box
-              bg={bgColor}
-              border="1px"
-              borderColor={borderColor}
-              p={4}
-              borderRadius="md"
-            >
-              <Stat>
-                <StatLabel>Total Assets</StatLabel>
-                <StatNumber>{stats.totalAssets}</StatNumber>
-                <StatHelpText>All files</StatHelpText>
-              </Stat>
-            </Box>
-          </GridItem>
+          <Box
+            bg="white"
+            border="1px"
+            borderColor="gray.200"
+            p={6}
+            borderRadius="md"
+            boxShadow="sm"
+          >
+            <Text fontSize="sm" color="gray.600" mb={2}>
+              Total Assets
+            </Text>
+            <Text fontSize="3xl" fontWeight="bold">
+              {stats.totalAssets}
+            </Text>
+            <Text fontSize="sm" color="gray.500" mt={1}>
+              All files
+            </Text>
+          </Box>
 
-          <GridItem>
-            <Box
-              bg={bgColor}
-              border="1px"
-              borderColor={borderColor}
-              p={4}
-              borderRadius="md"
-            >
-              <Stat>
-                <StatLabel>Images</StatLabel>
-                <StatNumber>{stats.images}</StatNumber>
-                <StatHelpText>Photos & graphics</StatHelpText>
-              </Stat>
-            </Box>
-          </GridItem>
+          <Box
+            bg="white"
+            border="1px"
+            borderColor="gray.200"
+            p={6}
+            borderRadius="md"
+            boxShadow="sm"
+          >
+            <Text fontSize="sm" color="gray.600" mb={2}>
+              Images
+            </Text>
+            <Text fontSize="3xl" fontWeight="bold">
+              {stats.images}
+            </Text>
+            <Text fontSize="sm" color="gray.500" mt={1}>
+              Photos & graphics
+            </Text>
+          </Box>
         </Grid>
 
         {/* Quick Actions */}
         <Box
-          bg={bgColor}
+          bg="white"
           border="1px"
-          borderColor={borderColor}
+          borderColor="gray.200"
           p={6}
           borderRadius="md"
+          boxShadow="sm"
         >
           <Heading size="md" mb={4}>Quick Actions</Heading>
-          <VStack align="stretch" spacing={3}>
+          <VStack align="stretch" gap={3}>
             <Button
               as={Link}
               href="/upload"
               colorScheme="blue"
               size="lg"
+              w="full"
             >
               Upload Assets
             </Button>
@@ -100,6 +99,7 @@ export default function DashboardPage() {
               href="/assets"
               variant="outline"
               size="lg"
+              w="full"
             >
               Browse Library
             </Button>
