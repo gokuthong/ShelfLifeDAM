@@ -1,0 +1,72 @@
+# =========================
+# Python
+# =========================
+__pycache__/
+*.py[cod]
+*.pyo
+*.pyd
+*.pdb
+*.log
+*.sqlite3
+*.db
+.env
+.venv/
+env/
+venv/
+ENV/
+.Python
+instance/
+*.egg-info/
+*.egg
+*.manifest
+*.spec
+.DS_Store
+
+# =========================
+# Node / Frontend
+# =========================
+node_modules/
+frontend/node_modules/
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+pnpm-debug.log*
+package-lock.json
+pnpm-lock.yaml
+yarn.lock
+.next/
+dist/
+build/
+.cache/
+coverage/
+*.tsbuildinfo
+
+# =========================
+# IDE / Editor
+# =========================
+.vscode/
+.idea/
+*.sublime-project
+*.sublime-workspace
+*.iml
+*.swp
+*.swo
+
+# =========================
+# OS Files
+# =========================
+Thumbs.db
+ehthumbs.db
+Desktop.ini
+.DS_Store
+Icon?
+$RECYCLE.BIN/
+
+# =========================
+# Misc
+# =========================
+*.bak
+*.tmp
+*.old
+*.orig
+*.log
