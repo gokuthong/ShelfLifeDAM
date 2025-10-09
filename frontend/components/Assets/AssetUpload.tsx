@@ -51,6 +51,24 @@ export function AssetUpload() {
     return Math.round(bytes / Math.pow(k, i) * 100) / 100 + ' ' + sizes[i]
   }
 
+  const getFileType = (fileName: string): string => {
+    const ext = fileName.split('.').pop()?.toLowerCase() || ''
+
+    if (['jpg', 'jpeg', 'png', 'gif', 'bmp', 'webp', 'svg'].includes(ext)) {
+      return 'image'
+    } else if (['mp4', 'avi', 'mov', 'wmv', 'flv', 'mkv'].includes(ext)) {
+      return 'video'
+    } else if (ext === 'pdf') {
+      return 'pdf'
+    } else if (['doc', 'docx', 'txt', 'rtf'].includes(ext)) {
+      return 'doc'
+    } else if (['mp3', 'wav', 'ogg', 'flac'].includes(ext)) {
+      return 'audio'
+    } else {
+      return 'other'
+    }
+  }
+
   const handleUpload = async () => {
     if (files.length === 0) {
       setUploadStatus({ type: 'error', message: 'Please select files to upload' })
@@ -64,14 +82,20 @@ export function AssetUpload() {
       const uploadPromises = files.map(async (file) => {
         const formData = new FormData()
         formData.append('file', file)
-        formData.append('title', file.name)
+        formData.append('title', file.name.replace(/\.[^/.]+$/, "")) // Remove extension
         formData.append('description', '')
+        formData.append('file_type', getFileType(file.name))
         formData.append('tags', JSON.stringify([]))
 
-        return assetsAPI.create(formData)
+        console.log('Uploading file:', file.name)
+        console.log('Detected file_type:', getFileType(file.name))
+
+        // Use the API method that has the correct endpoint
+        return await assetsAPI.create(formData)
       })
 
-      await Promise.all(uploadPromises)
+      const results = await Promise.all(uploadPromises)
+      console.log('Upload success:', results)
 
       setUploadStatus({
         type: 'success',
@@ -85,9 +109,41 @@ export function AssetUpload() {
       }, 2000)
     } catch (error: any) {
       console.error('Upload error:', error)
+      console.error('Error response:', error.response?.data)
+      console.error('Error status:', error.response?.status)
+
+      let errorMessage = 'Upload failed. Please try again.'
+
+      if (error.response?.data) {
+        const errorData = error.response.data
+
+        // Handle various error formats
+        if (typeof errorData === 'string') {
+          errorMessage = errorData
+        } else if (errorData.error) {
+          errorMessage = errorData.error
+        } else if (errorData.detail) {
+          errorMessage = errorData.detail
+        } else if (errorData.file) {
+          errorMessage = Array.isArray(errorData.file) ? errorData.file[0] : errorData.file
+        } else if (errorData.title) {
+          errorMessage = Array.isArray(errorData.title) ? errorData.title[0] : errorData.title
+        } else if (errorData.file_type) {
+          errorMessage = Array.isArray(errorData.file_type) ? errorData.file_type[0] : errorData.file_type
+        } else {
+          // Try to extract first error message
+          const firstError = Object.values(errorData)[0]
+          if (Array.isArray(firstError)) {
+            errorMessage = firstError[0]
+          } else if (typeof firstError === 'string') {
+            errorMessage = firstError
+          }
+        }
+      }
+
       setUploadStatus({
         type: 'error',
-        message: error.response?.data?.error || 'Upload failed. Please try again.'
+        message: errorMessage
       })
     } finally {
       setIsUploading(false)
