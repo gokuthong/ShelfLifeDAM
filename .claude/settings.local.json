@@ -1,0 +1,10 @@
+{
+  "permissions": {
+    "allow": [
+      "Bash(dir \"C:\\Users\\ASUS\\Downloads\\ShelfLifeDAM-main\\ShelfLifeDAM-main\" -Depth 1)",
+      "Bash(dir:*)"
+    ],
+    "deny": [],
+    "ask": []
+  }
+}

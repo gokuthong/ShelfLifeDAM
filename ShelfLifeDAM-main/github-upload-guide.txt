@@ -1,0 +1,1155 @@
+================================================================================
+          SHELFLIFE DAM - GITHUB UPLOAD GUIDE (FILE TOO LARGE FIX)
+================================================================================
+
+PROBLEM IDENTIFIED:
+-------------------
+Your repository contains large files/folders that are causing upload failures:
+  1. .venv/ - Python virtual environment (~150-300 MB)
+  2. backend/venv/ - Another Python virtual environment (~150-300 MB)
+  3. frontend/node_modules/ - Node.js dependencies (~200-500 MB)
+  4. frontend/.next/ - Next.js build files (~50-100 MB)
+  5. __pycache__/ - Python bytecode cache files
+  6. backend/media/ - Uploaded media files (could be large)
+
+These files are ALREADY TRACKED by Git (they were committed before .gitignore
+was properly set up). Simply adding them to .gitignore won't remove them from
+Git history.
+
+
+================================================================================
+SOLUTION STEPS - FOLLOW IN ORDER
+================================================================================
+
+STEP 1: UPDATE .gitignore FILE
+-------------------------------
+First, ensure your .gitignore includes the media folder. Add this line:
+
+# Media files (uploaded assets)
+backend/media/
+media/
+
+Your .gitignore should already have (verify these are present):
+  - venv/
+  - node_modules/
+  - __pycache__/
+  - .next/
+  - *.pyc
+
+
+STEP 2: REMOVE LARGE FILES FROM GIT TRACKING
+---------------------------------------------
+Run these commands to remove large files from Git while keeping them on disk:
+
+cd "C:\Users\PC\Desktop\software engineering\ShelfLifeDAM"
+
+# Remove .venv from git tracking
+git rm -r --cached .venv
+
+# Remove backend/venv from git tracking
+git rm -r --cached backend/venv
+
+# Remove frontend/venv from git tracking (if exists)
+git rm -r --cached frontend/venv
+
+# Remove frontend/node_modules from git tracking
+git rm -r --cached frontend/node_modules
+
+# Remove frontend/.next build files from git tracking
+git rm -r --cached frontend/.next
+
+# Remove Python cache files from git tracking
+git rm -r --cached backend/**/__pycache__
+
+# Remove backend/media files from git tracking
+git rm -r --cached backend/media
+
+IMPORTANT: The --cached flag keeps files on your computer but removes them
+from Git tracking. This is what you want!
+
+
+STEP 3: ADD YOUR SOURCE CODE FILES
+-----------------------------------
+Now add only the files you want to commit:
+
+# Add all Python source files
+git add backend/**/*.py
+
+# Add all TypeScript/JavaScript files
+git add frontend/**/*.tsx
+git add frontend/**/*.ts
+git add frontend/**/*.jsx
+git add frontend/**/*.js
+git add frontend/**/*.json
+git add frontend/**/*.css
+
+# Add configuration files
+git add backend/requirements.txt
+git add frontend/package.json
+git add .gitignore
+git add README.md
+git add git-commit-plan.txt
+git add github-upload-guide.txt
+
+# Add Django configuration files
+git add backend/ShelfLifeDAM/**/*.py
+git add backend/manage.py
+
+# Add migrations (database schema)
+git add backend/**/migrations/*.py
+
+# Alternative: Add everything except ignored files
+git add .
+
+Note: "git add ." is safer to use AFTER removing large files and updating
+.gitignore. It will automatically skip ignored files.
+
+
+STEP 4: COMMIT YOUR CHANGES
+----------------------------
+git commit -m "Remove large files and update .gitignore
+
+- Removed virtual environments (venv, .venv) from tracking
+- Removed node_modules from tracking
+- Removed build files (.next) from tracking
+- Removed Python cache files (__pycache__) from tracking
+- Removed media files from tracking
+- Updated .gitignore to prevent future commits of these files"
+
+
+STEP 5: PUSH TO GITHUB
+-----------------------
+# Push to your remote repository
+git push origin main
+
+If this is your first push or you get errors, you may need to set upstream:
+git push -u origin main
+
+If you get rejected due to conflicts, you may need to force push (BE CAREFUL):
+git push origin main --force
+
+WARNING: Force push will overwrite the remote repository. Only use if you're
+sure you want to replace the remote version with your local version.
+
+
+================================================================================
+ALTERNATIVE METHOD: START FRESH (RECOMMENDED IF ABOVE FAILS)
+================================================================================
+
+If the above steps don't work or the repository is too messy, start fresh:
+
+STEP 1: Backup your current work
+---------------------------------
+Copy the entire project folder to a backup location
+
+
+STEP 2: Remove Git history
+---------------------------
+cd "C:\Users\PC\Desktop\software engineering\ShelfLifeDAM"
+rm -rf .git
+
+
+STEP 3: Initialize new repository
+----------------------------------
+git init
+git add .
+git commit -m "Initial commit - ShelfLife DAM v1.0"
+
+
+STEP 4: Create GitHub repository
+---------------------------------
+1. Go to github.com and create a new repository
+2. DO NOT initialize with README (your local repo already has files)
+3. Copy the repository URL (e.g., https://github.com/username/ShelfLifeDAM.git)
+
+
+STEP 5: Connect and push
+-------------------------
+git remote add origin YOUR_GITHUB_REPO_URL
+git branch -M main
+git push -u origin main
+
+
+================================================================================
+VERIFICATION COMMANDS
+================================================================================
+
+Check what files are staged:
+  git status
+
+Check what files are tracked by Git:
+  git ls-files
+
+Check repository size:
+  git count-objects -vH
+
+See what's ignored:
+  git status --ignored
+
+Check remote URL:
+  git remote -v
+
+
+================================================================================
+RECOMMENDED .gitignore ADDITIONS
+================================================================================
+
+Add these lines to your .gitignore if not already present:
+
+# Media files
+backend/media/
+media/
+*.jpg
+*.jpeg
+*.png
+*.gif
+*.mp4
+*.avi
+*.mov
+*.obj
+*.glb
+*.gltf
+
+# Database
+*.sqlite3
+*.db
+db.sqlite3
+
+# Environment variables
+.env
+.env.local
+.env.development
+.env.production
+
+# IDE
+.vscode/
+.idea/
+*.code-workspace
+
+
+================================================================================
+COMMON ERRORS AND SOLUTIONS
+================================================================================
+
+ERROR: "fatal: pathspec '.venv' did not match any files"
+SOLUTION: The file/folder doesn't exist or isn't tracked. Skip this command.
+
+ERROR: "remote: error: GH001: Large files detected"
+SOLUTION: Files are still in Git history. Run STEP 2 commands again.
+
+ERROR: "error: failed to push some refs"
+SOLUTION: Pull first with: git pull origin main --rebase
+          Then push again: git push origin main
+
+ERROR: "fatal: refusing to merge unrelated histories"
+SOLUTION: Use: git pull origin main --allow-unrelated-histories
+
+ERROR: "Your branch and 'origin/main' have diverged"
+SOLUTION: Either:
+  A) git pull --rebase origin main  (recommended)
+  B) git push --force origin main   (overwrites remote)
+
+
+================================================================================
+FILES TO DEFINITELY EXCLUDE (TOO LARGE FOR GITHUB)
+================================================================================
+
+NEVER commit these to GitHub:
+  ✗ venv/, .venv/, ENV/ - Virtual environments (100+ MB)
+  ✗ node_modules/ - Node dependencies (200+ MB)
+  ✗ .next/, dist/, build/ - Build outputs (50+ MB)
+  ✗ __pycache__/ - Python cache (10+ MB)
+  ✗ backend/media/ - User uploaded files (can be very large)
+  ✗ *.pyc, *.pyo - Compiled Python files
+  ✗ package-lock.json - Can be regenerated (100+ MB sometimes)
+  ✗ .env - Contains sensitive data
+
+
+FILES TO INCLUDE (SOURCE CODE)
+===============================
+
+Always commit these:
+  ✓ backend/**/*.py - Python source code
+  ✓ frontend/**/*.tsx, *.ts, *.jsx, *.js - React/Next.js code
+  ✓ requirements.txt - Python dependencies list
+  ✓ package.json - Node.js dependencies list
+  ✓ .gitignore - Git ignore rules
+  ✓ README.md - Project documentation
+  ✓ backend/**/migrations/*.py - Database migrations
+  ✓ frontend/components/ - React components
+  ✓ frontend/app/ - Next.js app pages
+  ✓ backend/ShelfLifeDAM/settings.py - Django settings (without secrets)
+  ✓ Configuration files (*.json, *.config.js, *.config.ts)
+
+
+================================================================================
+QUICK REFERENCE: COMPLETE UPLOAD SEQUENCE
+================================================================================
+
+# 1. Navigate to project
+cd "C:\Users\PC\Desktop\software engineering\ShelfLifeDAM"
+
+# 2. Remove large files from tracking
+git rm -r --cached .venv backend/venv frontend/node_modules frontend/.next backend/**/__pycache__ backend/media
+
+# 3. Add source files
+git add .
+
+# 4. Commit changes
+git commit -m "Remove large files from tracking"
+
+# 5. Push to GitHub
+git push origin main
+
+# If push fails, force push (use with caution)
+git push origin main --force
+
+
+================================================================================
+GITHUB FILE SIZE LIMITS
+================================================================================
+
+GitHub has these limits:
+  - Individual file size: 100 MB (hard limit)
+  - Repository size: 5 GB recommended, 100 GB maximum
+  - Large File Storage (LFS): Use for files 50 MB - 2 GB
+
+If you have files over 100 MB:
+  - Use Git LFS: git lfs track "*.psd"
+  - Or exclude them from the repository
+  - Store large files elsewhere (cloud storage, CDN)
+
+
+================================================================================
+POST-UPLOAD SETUP FOR COLLABORATORS
+================================================================================
+
+After others clone the repository, they need to:
+
+Backend setup:
+  cd backend
+  python -m venv venv
+  source venv/bin/activate  # On Windows: venv\Scripts\activate
+  pip install -r requirements.txt
+  python manage.py migrate
+  python manage.py createsuperuser
+
+Frontend setup:
+  cd frontend
+  npm install
+  npm run dev
+
+
+================================================================================
+ADDITIONAL RESOURCES
+================================================================================
+
+Git Documentation:
+  https://git-scm.com/doc
+
+GitHub Large Files:
+  https://docs.github.com/en/repositories/working-with-files/managing-large-files
+
+Git LFS:
+  https://git-lfs.github.com/
+
+
+================================================================================
+SUPPORT
+================================================================================
+
+If you encounter issues:
+  1. Check the error message carefully
+  2. Run: git status
+  3. Run: git ls-files | wc -l  (count tracked files)
+  4. Check file sizes: du -sh * | sort -h
+  5. Review what's being committed: git diff --staged --name-only
+
+
+================================================================================
+END OF GUIDE
+================================================================================
+
+
+================================================================================
+TEAM COLLABORATION PLAN - BRANCH STRATEGY
+================================================================================
+
+PROJECT TIMELINE: November 1, 2025 - November 11, 2025 (10 Days)
+TEAM MEMBERS: BT, WK, ZC
+BRANCH STRATEGY: 4 branches per person (12 branches total)
+
+================================================================================
+BRANCH NAMING CONVENTION
+================================================================================
+
+Format: feature/<initials>-<feature-name>
+
+Examples:
+  - feature/bt-asset-upload
+  - feature/wk-authentication
+  - feature/zc-registration
+
+All branches merge into: main
+Merge deadline: November 11, 2025
+
+
+================================================================================
+BT - TEAM MEMBER 1
+================================================================================
+
+ASSIGNED FEATURES:
+  1. Asset Upload System
+  2. Activity Logging
+  3. Profile Management
+  4. Dark Mode Toggle
+
+---
+
+BRANCH 1: feature/bt-asset-upload
+Timeline: November 1-3, 2025 (Days 1-2.5)
+Status: In Progress
+
+FILES TO MODIFY/CREATE:
+Frontend:
+  - frontend/components/Assets/AssetUpload.tsx
+  - frontend/app/upload/page.tsx
+  - frontend/hooks/useAssets.ts (upload mutation)
+  - frontend/utils/api.ts (upload endpoints)
+
+Backend:
+  - backend/assets/views.py (AssetViewSet.perform_create, upload_asset)
+  - backend/assets/serializers.py (AssetSerializer)
+  - backend/assets/models.py (Asset model)
+
+TASKS:
+  □ Create drag-and-drop upload component
+  □ Implement multi-file selection
+  □ Add file type validation (images, videos, documents, 3D models)
+  □ Create file preview grid
+  □ Implement backend upload endpoint
+  □ Add file size validation
+  □ Create upload progress indicator
+  □ Test upload with various file types
+  □ Add error handling for failed uploads
+  □ Document supported file formats
+
+MERGE TO MAIN BY: November 3, 2025 (11:59 PM)
+
+---
+
+BRANCH 2: feature/bt-activity-log
+Timeline: November 3-6, 2025 (Days 2.5-5)
+Status: Pending
+
+FILES TO MODIFY/CREATE:
+Frontend:
+  - frontend/app/activity/page.tsx
+  - frontend/components/Activity/ActivityLogClient.tsx (if needed)
+  - frontend/utils/api.ts (activity endpoints)
+
+Backend:
+  - backend/activity/models.py (ActivityLog model)
+  - backend/activity/views.py (ActivityLogViewSet)
+  - backend/activity/serializers.py (ActivityLogSerializer)
+  - backend/activity/signals.py (auto-logging triggers)
+
+TASKS:
+  □ Create ActivityLog database model
+  □ Implement activity logging signals (on upload, edit, delete)
+  □ Create activity log API endpoints
+  □ Build activity log page with filtering
+  □ Add action type badges (Upload, Edit, Delete, View, etc.)
+  □ Implement user activity filtering
+  □ Add timestamp display
+  □ Create detailed activity change viewer
+  □ Implement role-based access (Editor/Admin only)
+  □ Add pagination for activity logs
+  □ Test activity logging on all actions
+
+MERGE TO MAIN BY: November 6, 2025 (11:59 PM)
+
+---
+
+BRANCH 3: feature/bt-profile-management
+Timeline: November 6-8, 2025 (Days 5-7.5)
+Status: Pending
+
+FILES TO MODIFY/CREATE:
+Frontend:
+  - frontend/app/profile/page.tsx
+  - frontend/contexts/AuthContext.tsx (updateProfile method)
+  - frontend/utils/api.ts (profile endpoints)
+
+Backend:
+  - backend/users/views.py (user_profile view, update)
+  - backend/users/serializers.py (UserProfileSerializer)
+  - backend/users/models.py (User model with avatar field)
+
+TASKS:
+  □ Create profile page UI
+  □ Implement avatar upload/change functionality
+  □ Add bio/profile info edit mode
+  □ Create name editing (first/last name)
+  □ Display account details (role, member since, last login)
+  □ Implement profile update backend endpoint
+  □ Add image upload validation
+  □ Create avatar preview
+  □ Add save/cancel buttons
+  □ Implement role permissions display
+  □ Test profile updates
+  □ Add success/error notifications
+
+MERGE TO MAIN BY: November 8, 2025 (11:59 PM)
+
+---
+
+BRANCH 4: feature/bt-dark-mode
+Timeline: November 8-11, 2025 (Days 7.5-10)
+Status: Pending
+
+FILES TO MODIFY/CREATE:
+Frontend:
+  - frontend/contexts/ColorModeContext.tsx
+  - frontend/store/slices/uiSlice.ts
+  - frontend/components/Layout/Header.tsx (toggle button)
+  - All component files (ensure dark mode compatibility)
+
+TASKS:
+  □ Create ColorModeContext with toggle function
+  □ Implement Redux state for color mode
+  □ Add dark mode toggle button in Header
+  □ Set up localStorage persistence
+  □ Apply Chakra UI color mode to all components
+  □ Test dark mode on all pages
+  □ Ensure proper contrast ratios
+  □ Fix any dark mode UI bugs
+  □ Add smooth transitions
+  □ Test with system preference detection
+  □ Document dark mode usage
+
+MERGE TO MAIN BY: November 11, 2025 (11:59 PM)
+
+
+================================================================================
+WK - TEAM MEMBER 2
+================================================================================
+
+ASSIGNED FEATURES:
+  1. Authentication (Login)
+  2. Dashboard
+  3. Asset Library
+  4. Asset Details & Viewing
+
+---
+
+BRANCH 1: feature/wk-authentication
+Timeline: November 1-3, 2025 (Days 1-2.5)
+Status: In Progress
+
+FILES TO MODIFY/CREATE:
+Frontend:
+  - frontend/app/login/page.tsx
+  - frontend/contexts/AuthContext.tsx
+  - frontend/hooks/useAuth.ts
+  - frontend/store/slices/authSlice.ts
+  - frontend/utils/api.ts (axios interceptors)
+
+Backend:
+  - backend/users/views.py (login_user, token refresh)
+  - backend/users/serializers.py (LoginSerializer)
+  - backend/users/urls.py
+  - backend/ShelfLifeDAM/settings.py (JWT configuration)
+
+TASKS:
+  □ Create login page UI
+  □ Implement login form with validation
+  □ Set up JWT token authentication
+  □ Create AuthContext for global auth state
+  □ Implement token storage (localStorage)
+  □ Add auto-token refresh with axios interceptors
+  □ Create login backend endpoint
+  □ Add password hashing
+  □ Implement session persistence
+  □ Add redirect to dashboard on login
+  □ Add logout functionality
+  □ Test authentication flow
+  □ Add error handling for invalid credentials
+
+MERGE TO MAIN BY: November 3, 2025 (11:59 PM)
+
+---
+
+BRANCH 2: feature/wk-dashboard
+Timeline: November 3-6, 2025 (Days 2.5-5)
+Status: Pending
+
+FILES TO MODIFY/CREATE:
+Frontend:
+  - frontend/app/dashboard/page.tsx
+  - frontend/components/Dashboard/StatCard.tsx (if needed)
+  - frontend/utils/api.ts (stats endpoints)
+
+Backend:
+  - backend/assets/views.py (stats endpoint)
+  - Create dashboard statistics view
+
+TASKS:
+  □ Create dashboard page layout
+  □ Implement role-based welcome message
+  □ Build statistics grid component
+  □ Add asset count cards (Total, Images, Videos, Documents)
+  □ Create quick action buttons
+  □ Implement role-specific feature descriptions
+  □ Add dashboard stats API endpoint
+  □ Display recent activity summary
+  □ Create responsive grid layout
+  □ Add loading states
+  □ Test with different roles (Admin/Editor/Viewer)
+  □ Add navigation shortcuts
+
+MERGE TO MAIN BY: November 6, 2025 (11:59 PM)
+
+---
+
+BRANCH 3: feature/wk-asset-library
+Timeline: November 6-8, 2025 (Days 5-7.5)
+Status: Pending
+
+FILES TO MODIFY/CREATE:
+Frontend:
+  - frontend/app/assets/page.tsx
+  - frontend/components/Assets/AssetCard.tsx
+  - frontend/hooks/useAssets.ts
+  - frontend/utils/api.ts (asset list endpoints)
+
+Backend:
+  - backend/assets/views.py (AssetViewSet.list)
+  - backend/assets/serializers.py
+  - Add filtering and sorting logic
+
+TASKS:
+  □ Create asset library page
+  □ Implement asset grid display
+  □ Create AssetCard component
+  □ Add filtering by file type
+  □ Implement sorting (Newest, Oldest, Title, Size)
+  □ Add search integration
+  □ Display asset count
+  □ Implement delete functionality
+  □ Add confirmation dialog for delete
+  □ Create asset thumbnail generation
+  □ Implement pagination/infinite scroll
+  □ Add empty state UI
+  □ Test with large asset collections
+
+MERGE TO MAIN BY: November 8, 2025 (11:59 PM)
+
+---
+
+BRANCH 4: feature/wk-asset-details
+Timeline: November 8-11, 2025 (Days 7.5-10)
+Status: Pending
+
+FILES TO MODIFY/CREATE:
+Frontend:
+  - frontend/app/assets/[id]/page.tsx
+  - frontend/app/assets/[id]/edit/page.tsx
+  - frontend/components/Assets/AssetDetailClient.tsx
+  - frontend/components/Assets/EditAssetClient.tsx
+  - frontend/components/Assets/DeleteAssetModal.tsx
+  - frontend/components/Assets/BabylonViewer.tsx
+  - frontend/components/Assets/BabylonViewerModal.tsx
+
+Backend:
+  - backend/assets/views.py (AssetViewSet.retrieve, update, destroy)
+  - backend/assets/models.py (AssetVersion model)
+
+TASKS:
+  □ Create asset detail page
+  □ Display asset metadata
+  □ Implement asset editing page
+  □ Create edit form for title/description/tags
+  □ Add delete modal with confirmation
+  □ Implement 3D model viewer (Babylon.js)
+  □ Add version history display
+  □ Create download button
+  □ Add breadcrumb navigation
+  □ Implement permission checks (owner/admin)
+  □ Test with various asset types
+  □ Add loading states and error handling
+
+MERGE TO MAIN BY: November 11, 2025 (11:59 PM)
+
+
+================================================================================
+ZC - TEAM MEMBER 3
+================================================================================
+
+ASSIGNED FEATURES:
+  1. User Registration
+  2. User Management (Admin)
+  3. Search Functionality
+  4. Advanced Filters & Role Guards
+
+---
+
+BRANCH 1: feature/zc-registration
+Timeline: November 1-3, 2025 (Days 1-2.5)
+Status: In Progress
+
+FILES TO MODIFY/CREATE:
+Frontend:
+  - frontend/app/register/page.tsx
+  - frontend/contexts/AuthContext.tsx (register method)
+  - frontend/store/slices/authSlice.ts (registerUser thunk)
+
+Backend:
+  - backend/users/views.py (register_user view)
+  - backend/users/serializers.py (UserRegistrationSerializer)
+  - backend/users/models.py (User model)
+
+TASKS:
+  □ Create registration page UI
+  □ Implement registration form
+  □ Add form validation (email, password strength)
+  □ Create password confirmation field
+  □ Implement backend registration endpoint
+  □ Add email validation
+  □ Set default role (viewer)
+  □ Create user profile on registration
+  □ Add auto-login after registration
+  □ Implement success/error notifications
+  □ Test registration flow
+  □ Add unique username/email validation
+  □ Handle registration errors
+
+MERGE TO MAIN BY: November 3, 2025 (11:59 PM)
+
+---
+
+BRANCH 2: feature/zc-user-management
+Timeline: November 3-6, 2025 (Days 2.5-5)
+Status: Pending
+
+FILES TO MODIFY/CREATE:
+Frontend:
+  - frontend/app/users/page.tsx
+  - frontend/components/Users/EditUserModal.tsx
+  - frontend/utils/api.ts (user CRUD endpoints)
+
+Backend:
+  - backend/users/views.py (user_list, user_detail, update, delete)
+  - backend/users/serializers.py (UserUpdateSerializer)
+  - backend/users/permissions.py (IsAdmin permission)
+
+TASKS:
+  □ Create user management page (admin-only)
+  □ Implement user list display
+  □ Add user search/filter (username, email)
+  □ Display user statistics (total, by role)
+  □ Create user cards with info
+  □ Implement edit user modal
+  □ Add role assignment functionality
+  □ Create delete user with confirmation
+  □ Prevent deleting self or last admin
+  □ Add user CRUD backend endpoints
+  □ Implement admin-only permissions
+  □ Test role changes
+  □ Add pagination for user list
+
+MERGE TO MAIN BY: November 6, 2025 (11:59 PM)
+
+---
+
+BRANCH 3: feature/zc-search
+Timeline: November 6-8, 2025 (Days 5-7.5)
+Status: Pending
+
+FILES TO MODIFY/CREATE:
+Frontend:
+  - frontend/app/search/page.tsx
+  - frontend/hooks/useAssets.ts (search hook)
+  - frontend/utils/api.ts (search endpoints)
+
+Backend:
+  - backend/assets/views.py (search_assets view)
+  - backend/assets/filters.py (AssetFilter)
+  - Implement full-text search
+
+TASKS:
+  □ Create search page UI
+  □ Implement search input with debouncing
+  □ Add search by title/description/tags
+  □ Create advanced filters panel
+  □ Implement backend search endpoint
+  □ Add full-text search capability
+  □ Display search results count
+  □ Add "no results" state
+  □ Create clear filters button
+  □ Implement search highlighting
+  □ Add search suggestions (optional)
+  □ Test search with various queries
+  □ Optimize search performance
+
+MERGE TO MAIN BY: November 8, 2025 (11:59 PM)
+
+---
+
+BRANCH 4: feature/zc-advanced-filters
+Timeline: November 8-11, 2025 (Days 7.5-10)
+Status: Pending
+
+FILES TO MODIFY/CREATE:
+Frontend:
+  - frontend/app/search/page.tsx (enhance filters)
+  - frontend/components/Auth/RoleGuard.tsx
+  - frontend/components/Assets/AssetComments.tsx
+
+Backend:
+  - backend/activity/views.py (comment CRUD)
+  - backend/activity/models.py (Comment model)
+  - backend/users/permissions.py (role-based permissions)
+
+TASKS:
+  □ Add date range filters (from/to)
+  □ Implement file type filter
+  □ Add sort options to search
+  □ Create RoleGuard component
+  □ Apply role guards to protected routes
+  □ Implement asset comments system
+  □ Create comment CRUD endpoints
+  □ Add comment form component
+  □ Display comments on asset details
+  □ Implement delete comment (owner/admin)
+  □ Add comment timestamps
+  □ Test all filters together
+  □ Add filter persistence (URL params)
+
+MERGE TO MAIN BY: November 11, 2025 (11:59 PM)
+
+
+================================================================================
+SHARED/COMMON TASKS (All Team Members)
+================================================================================
+
+Layout & Navigation:
+  - frontend/components/Layout/AppLayout.tsx
+  - frontend/components/Layout/Header.tsx
+  - frontend/components/Layout/Sidebar.tsx
+  ASSIGNED TO: WK (create basic structure in Branch 1)
+
+API Utilities Setup:
+  - frontend/utils/api.ts (base configuration)
+  - frontend/utils/format.ts
+  ASSIGNED TO: WK (set up in Branch 1)
+
+Redux Store Setup:
+  - frontend/store/index.ts
+  ASSIGNED TO: All (contribute to their respective slices)
+
+Database Models:
+  - backend/users/models.py (User)
+  ASSIGNED TO: ZC (Branch 1)
+  - backend/assets/models.py (Asset, Metadata, AssetVersion)
+  ASSIGNED TO: BT (Branch 1)
+  - backend/activity/models.py (ActivityLog, Comment)
+  ASSIGNED TO: BT (Branch 2) and ZC (Branch 4)
+
+Configuration:
+  - backend/ShelfLifeDAM/settings.py
+  ASSIGNED TO: WK (JWT setup in Branch 1)
+
+
+================================================================================
+LEFTOVER/ADDITIONAL FEATURES DISTRIBUTION
+================================================================================
+
+The following features were not in the original assignments and have been
+distributed to balance the workload:
+
+ASSIGNED TO BT:
+  - Asset Comments (frontend/components/Assets/AssetComments.tsx)
+    → Added to Branch 4 if time permits
+  - Activity signals (backend/activity/signals.py)
+    → Part of Branch 2
+
+ASSIGNED TO WK:
+  - 3D Model Viewer (frontend/components/Assets/BabylonViewer.tsx)
+    → Part of Branch 4
+  - Asset Version History
+    → Part of Branch 4
+  - Layout components (Header, Sidebar, AppLayout)
+    → Part of Branch 1
+
+ASSIGNED TO ZC:
+  - RoleGuard component (frontend/components/Auth/RoleGuard.tsx)
+    → Part of Branch 4
+  - Permission system (backend/users/permissions.py)
+    → Part of Branch 2
+  - Comment deletion logic
+    → Part of Branch 4
+
+
+================================================================================
+GIT WORKFLOW FOR TEAM COLLABORATION
+================================================================================
+
+DAILY WORKFLOW:
+
+1. Start of Day:
+   git checkout main
+   git pull origin main
+   git checkout <your-branch>
+   git merge main  # Merge latest changes into your branch
+
+2. During Development:
+   # Make changes to files
+   git add <files>
+   git commit -m "Descriptive commit message"
+   git push origin <your-branch>
+
+3. Before Merging to Main:
+   # Ensure all tests pass
+   # Get code review from at least one team member
+   # Resolve any merge conflicts
+
+   git checkout main
+   git pull origin main
+   git checkout <your-branch>
+   git merge main
+   # Resolve conflicts if any
+   git push origin <your-branch>
+
+   # Create Pull Request on GitHub
+   # Wait for approval
+   # Merge to main
+
+4. After Merge:
+   git checkout main
+   git pull origin main
+   # Start work on next branch
+
+
+BRANCH CREATION:
+
+# For BT:
+git checkout main
+git pull origin main
+git checkout -b feature/bt-asset-upload
+git push -u origin feature/bt-asset-upload
+
+# For WK:
+git checkout main
+git pull origin main
+git checkout -b feature/wk-authentication
+git push -u origin feature/wk-authentication
+
+# For ZC:
+git checkout main
+git pull origin main
+git checkout -b feature/zc-registration
+git push -u origin feature/zc-registration
+
+
+MERGE CONFLICT RESOLUTION:
+
+If you encounter merge conflicts:
+
+1. git checkout <your-branch>
+2. git merge main
+3. # Git will show conflict files
+4. # Open each file and resolve conflicts manually
+5. # Look for <<<<<<< HEAD markers
+6. git add <resolved-files>
+7. git commit -m "Resolve merge conflicts"
+8. git push origin <your-branch>
+
+
+COMMIT MESSAGE CONVENTION:
+
+Format: <type>: <description>
+
+Types:
+  - feat: New feature
+  - fix: Bug fix
+  - docs: Documentation changes
+  - style: Formatting changes
+  - refactor: Code refactoring
+  - test: Adding tests
+  - chore: Maintenance tasks
+
+Examples:
+  git commit -m "feat: implement drag-and-drop file upload"
+  git commit -m "fix: resolve login redirect issue"
+  git commit -m "docs: update API documentation"
+
+
+PULL REQUEST TEMPLATE:
+
+Title: [INITIALS] Feature Name - Branch Number
+
+Description:
+## Changes Made
+- List all major changes
+- Highlight new features
+- Note any bug fixes
+
+## Files Modified
+- List main files changed
+
+## Testing
+- Describe how you tested
+- List test cases covered
+
+## Screenshots (if applicable)
+- Add UI screenshots
+
+## Notes for Reviewers
+- Any specific areas needing review
+- Known issues or limitations
+
+
+================================================================================
+PROGRESS TRACKING
+================================================================================
+
+TEAM PROGRESS CHECKLIST:
+
+BT Progress:
+  □ Branch 1: feature/bt-asset-upload (Due: Nov 3)
+  □ Branch 2: feature/bt-activity-log (Due: Nov 6)
+  □ Branch 3: feature/bt-profile-management (Due: Nov 8)
+  □ Branch 4: feature/bt-dark-mode (Due: Nov 11)
+
+WK Progress:
+  □ Branch 1: feature/wk-authentication (Due: Nov 3)
+  □ Branch 2: feature/wk-dashboard (Due: Nov 6)
+  □ Branch 3: feature/wk-asset-library (Due: Nov 8)
+  □ Branch 4: feature/wk-asset-details (Due: Nov 11)
+
+ZC Progress:
+  □ Branch 1: feature/zc-registration (Due: Nov 3)
+  □ Branch 2: feature/zc-user-management (Due: Nov 6)
+  □ Branch 3: feature/zc-search (Due: Nov 8)
+  □ Branch 4: feature/zc-advanced-filters (Due: Nov 11)
+
+
+DAILY STANDUP QUESTIONS:
+1. What did you complete yesterday?
+2. What will you work on today?
+3. Are there any blockers?
+4. Do you need help from team members?
+
+
+MERGE SCHEDULE:
+
+November 3, 2025:
+  - Merge feature/bt-asset-upload → main
+  - Merge feature/wk-authentication → main
+  - Merge feature/zc-registration → main
+
+November 6, 2025:
+  - Merge feature/bt-activity-log → main
+  - Merge feature/wk-dashboard → main
+  - Merge feature/zc-user-management → main
+
+November 8, 2025:
+  - Merge feature/bt-profile-management → main
+  - Merge feature/wk-asset-library → main
+  - Merge feature/zc-search → main
+
+November 11, 2025:
+  - Merge feature/bt-dark-mode → main
+  - Merge feature/wk-asset-details → main
+  - Merge feature/zc-advanced-filters → main
+  - Final integration testing
+  - Prepare for deployment
+
+
+================================================================================
+INTEGRATION TESTING SCHEDULE
+================================================================================
+
+After Each Major Merge (Every 2.5 Days):
+
+Test Cases:
+  1. Authentication flow (login/logout)
+  2. User registration
+  3. Asset upload and viewing
+  4. Search functionality
+  5. Role-based access control
+  6. Dark mode toggle
+  7. Profile updates
+  8. Activity logging
+
+Final Testing (November 11, 2025):
+  □ End-to-end user flows
+  □ Cross-browser testing
+  □ Mobile responsiveness
+  □ Performance testing
+  □ Security audit
+  □ API endpoint testing
+  □ Database integrity check
+
+
+================================================================================
+IMPORTANT NOTES
+================================================================================
+
+1. DEPENDENCIES:
+   - WK must complete authentication (Branch 1) first - other features depend on it
+   - BT's upload system (Branch 1) is needed before asset library work
+   - Layout components should be created early by WK
+
+2. COMMUNICATION:
+   - Use GitHub Issues for bug reports
+   - Use Pull Request comments for code review
+   - Daily standup at [TIME TO BE DECIDED]
+   - Slack/Discord for quick questions
+
+3. CODE STANDARDS:
+   - Follow existing code style
+   - Use TypeScript for all frontend code
+   - Write meaningful commit messages
+   - Add comments for complex logic
+   - Keep functions small and focused
+   - Write unit tests where applicable
+
+4. TESTING REQUIREMENTS:
+   - Test your features locally before pushing
+   - Write tests for critical functionality
+   - Review code before creating PR
+   - Get at least one approval before merging
+
+5. BACKUP STRATEGY:
+   - Push your code daily (even if incomplete)
+   - Use meaningful branch names
+   - Don't force push to main
+   - Keep local backups of work in progress
+
+
+================================================================================
+EMERGENCY CONTACTS & RESOURCES
+================================================================================
+
+Team Contacts:
+  - BT: [Email/Phone]
+  - WK: [Email/Phone]
+  - ZC: [Email/Phone]
+
+Resources:
+  - Project Documentation: [Link to docs]
+  - API Documentation: [Link to API docs]
+  - Design Mockups: [Link to designs]
+  - GitHub Repository: [Repository URL]
+
+Help Resources:
+  - Django REST Framework: https://www.django-rest-framework.org/
+  - Next.js Documentation: https://nextjs.org/docs
+  - Chakra UI: https://chakra-ui.com/
+  - React Query: https://tanstack.com/query/latest
+
+
+================================================================================
+Last Updated: November 1, 2025

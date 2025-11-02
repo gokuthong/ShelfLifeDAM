@@ -1,0 +1,57 @@
+================================================================================
+                    QUICK GITHUB UPLOAD COMMANDS
+                    Copy and Paste These Commands
+================================================================================
+
+Navigate to project directory:
+-------------------------------
+cd "C:\Users\PC\Desktop\software engineering\ShelfLifeDAM"
+
+
+Remove large files from Git tracking (keeps files on disk):
+-----------------------------------------------------------
+git rm -r --cached .venv
+git rm -r --cached backend/venv
+git rm -r --cached frontend/venv
+git rm -r --cached frontend/node_modules
+git rm -r --cached frontend/.next
+git rm -r --cached backend/media
+
+
+Add all source files:
+---------------------
+git add .
+
+
+Commit the changes:
+-------------------
+git commit -m "Remove large files from tracking and update .gitignore"
+
+
+Push to GitHub:
+---------------
+git push origin main
+
+
+If push is rejected, force push (BE CAREFUL - this overwrites remote):
+-----------------------------------------------------------------------
+git push origin main --force
+
+
+Check status at any time:
+-------------------------
+git status
+
+
+================================================================================
+IF YOU GET "PATHSPEC DID NOT MATCH" ERROR:
+Just skip that command - it means the file/folder wasn't tracked anyway.
+================================================================================
+
+VERIFICATION - Run after pushing:
+---------------------------------
+git ls-files | grep -E "(venv|node_modules|\.next|media|__pycache__)"
+
+If this returns nothing, you successfully removed all large files!
+
+================================================================================
