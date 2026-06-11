@@ -185,7 +185,7 @@ def page_models() -> None:
                 {"Accuracy": "{:.4f}", "Precision": "{:.4f}", "Recall": "{:.4f}",
                  "F1": "{:.4f}", "ROC-AUC": "{:.4f}"}
             ),
-            width="stretch",
+            use_container_width=True,
         )
         st.caption(
             "At ~8% defaults, accuracy is misleading. XGBoost gives the best F1 and ROC-AUC; "
