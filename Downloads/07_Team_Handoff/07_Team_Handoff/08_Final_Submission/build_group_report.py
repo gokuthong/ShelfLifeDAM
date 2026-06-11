@@ -705,6 +705,14 @@ def build_ch5(doc):
               "this dataset (Yang et al., 2025). Thirdly, the imbalance experiment showed that a "
               "single correction through scale_pos_weight outperformed every SMOTE combination, "
               "confirming that stacking corrections double-counts the minority class.")
+    para(doc, "The deliverable goal was also achieved in a usable form. The dashboard serves "
+              "the trained XGBoost pipeline live, and because the calibration analysis showed "
+              "that raw scores overstate risk, the Live Prediction page communicates results as "
+              "Low, Moderate and High bands anchored to the 50th and 80th percentiles of sample "
+              "scores. In our view this honest presentation, where the system admits what the "
+              "scores can and cannot say, is itself a finding: a model does not need perfect "
+              "probabilities to be useful, provided the interface matches what the model "
+              "actually knows.")
 
     heading(doc, "5.2 Limitations", 2)
     para(doc, "Firstly, the deployed model uses only application_train; the six relational child "
