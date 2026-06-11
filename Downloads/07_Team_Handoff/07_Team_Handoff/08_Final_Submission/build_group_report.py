@@ -634,6 +634,10 @@ def build_ch3(doc):
 
 def build_ch4(doc):
     heading(doc, "Chapter 4: Professional Practices", 1)
+    para(doc, "A two-person project lives or dies on its working habits. This chapter records "
+              "how we managed the codebase, how testing was woven into daily work, and how we "
+              "handled the ethical and legal responsibilities that come with modelling "
+              "financial decisions about real people.")
 
     heading(doc, "4.1 Version Control and Collaboration", 2)
     para(doc, "All code lived in a private GitHub repository "
