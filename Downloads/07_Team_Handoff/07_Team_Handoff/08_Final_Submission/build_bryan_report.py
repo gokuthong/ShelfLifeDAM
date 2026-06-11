@@ -528,7 +528,10 @@ def build_chapter3(doc):
          "MongoDB, which my team and I practised in the module labs, is an attractive option because an "
          "application and its variable length credit history can be stored as one semi structured "
          "document. In a nutshell, the project uses the simplest storage that fits the present scope while "
-         "documenting a credible path to a scalable store when the child tables are brought in.")
+         "documenting a credible path to a scalable store when the child tables are brought in. A "
+         "conventional relational database is the other alternative and would map naturally onto the seven "
+         "table schema in Appendix C, but it adds setup and administration cost that a two person student "
+         "project does not need at this stage.")
 
 
 def build_chapter4(doc):
