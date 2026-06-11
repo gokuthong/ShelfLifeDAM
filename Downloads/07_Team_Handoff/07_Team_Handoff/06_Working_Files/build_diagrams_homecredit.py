@@ -211,7 +211,8 @@ def erd():
 
 # ----------------------------------------------------------------------------- UML
 def uml_class():
-    fig, ax = _canvas(13, 8, "UML Class Diagram — Home Credit Prediction Codebase (src/)")
+    fig, ax = _canvas(14, 8.5, "UML Class Diagram — Home Credit Prediction Codebase (src/)",
+                      xmax=14, ymax=10)
 
     def cls(x, y, w, title, attrs, methods, fontsize=8.2):
         rows = attrs + (["—" * 18] if attrs and methods else []) + methods
