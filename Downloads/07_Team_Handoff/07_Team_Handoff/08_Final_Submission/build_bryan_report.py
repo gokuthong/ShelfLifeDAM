@@ -649,7 +649,9 @@ def build_chapter4(doc):
          "full confusion matrices, because accuracy alone is meaningless at an 8 percent default rate. "
          "From the lender perspective, recall measures how many future write-offs the model catches, while "
          "precision measures how many good customers are wrongly flagged, and the right balance depends on "
-         "the relative cost of those two errors.")
+         "the relative cost of those two errors. Five fold cross validation on the training portion is the "
+         "planned default, since it reuses the data efficiently while keeping each validation fold large "
+         "enough to contain several thousand defaulters.")
     para(doc,
          "Two refinements are planned after the first training round. Firstly, a decision threshold sweep "
          "will tune the cut-off away from the default 0.5, since class weighted models shift their score "
