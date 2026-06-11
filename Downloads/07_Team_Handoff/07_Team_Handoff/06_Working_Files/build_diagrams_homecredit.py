@@ -86,14 +86,14 @@ def dfd_level0():
     _box(ax, 0.3, 6.8, 2.2, 1.4, "Loan\nApplicant", ENTITY_FC, ENTITY_EC, bold=True)
     _box(ax, 0.3, 1.6, 2.2, 1.4, "Credit\nAnalyst", ENTITY_FC, ENTITY_EC, bold=True)
     _box(ax, 3.9, 3.9, 3.0, 2.1, "1.0\nLoan-Default\nPrediction System", PROCESS_FC, PROCESS_EC, fontsize=12, bold=True)
-    _box(ax, 7.9, 6.6, 2.0, 1.5, "Home Credit\nApplication\nDataset (Kaggle)", ENTITY_FC, ENTITY_EC, fontsize=10, bold=True)
-    _box(ax, 7.9, 1.7, 2.0, 1.2, "D1  Model Store &\nMetrics Reports", STORE_FC, STORE_EC, fontsize=10)
+    _box(ax, 7.5, 7.0, 2.3, 1.6, "Home Credit\nApplication\nDataset (Kaggle)", ENTITY_FC, ENTITY_EC, fontsize=10, bold=True)
+    _box(ax, 7.5, 1.6, 2.3, 1.2, "D1  Model Store &\nMetrics Reports", STORE_FC, STORE_EC, fontsize=10)
 
-    _arrow(ax, (2.5, 7.3), (4.4, 6.0), "Applicant details", offset=(-0.4, 0.25))
-    _arrow(ax, (4.4, 3.9), (2.5, 2.6), "Risk score & risk band", offset=(-0.55, -0.1))
-    _arrow(ax, (2.5, 2.0), (3.9, 4.3), "Evaluation query", offset=(-0.95, -0.25))
-    _arrow(ax, (7.9, 7.0), (6.9, 5.9), "Historical applications\n(307,511 records)", offset=(0.95, 0.3))
-    _arrow(ax, (6.9, 4.6), (7.9, 2.6), "Trained models,\nmetrics & figures", offset=(1.05, 0.25))
+    _arrow(ax, (2.5, 7.3), (4.4, 6.0), "Applicant details", offset=(-0.5, 0.3))
+    _arrow(ax, (4.4, 4.2), (2.5, 2.9), "Risk score & risk band", offset=(0.35, -0.35))
+    _arrow(ax, (2.5, 2.0), (4.2, 3.9), "Evaluation query", offset=(-0.25, -0.45))
+    _arrow(ax, (7.5, 7.2), (6.9, 6.0), "Historical applications\n(307,511 records)", offset=(1.35, 0.35))
+    _arrow(ax, (6.9, 4.3), (7.5, 2.8), "Trained models,\nmetrics & figures", offset=(1.25, 0.2))
 
     _save(fig, "dfd_level0.png")
 
