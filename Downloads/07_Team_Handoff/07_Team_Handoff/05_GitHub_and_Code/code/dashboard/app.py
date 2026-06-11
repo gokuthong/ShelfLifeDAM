@@ -192,6 +192,22 @@ def page_models() -> None:
             "Logistic Regression is the interpretable baseline."
         )
 
+    tuned = FIGURES_DIR.parent / "threshold_metrics.csv"
+    if tuned.exists():
+        st.subheader("Decision-threshold tuning")
+        tuned_df = pd.read_csv(tuned)
+        st.dataframe(
+            tuned_df.style.format(
+                {c: "{:.3f}" for c in tuned_df.columns if c != "model"}
+            ),
+            use_container_width=True,
+        )
+        st.caption(
+            "Metrics at the default 0.5 cut-off versus the F1-maximising threshold found "
+            "on the hold-out set (`python optimise_models.py`). Tuning the threshold trades "
+            "some recall for a much better precision/F1 balance without retraining."
+        )
+
     st.subheader("Confusion matrices and ROC curves")
     cols = st.columns(3)
     for col, model_slug in zip(cols, ["logistic_regression", "random_forest", "xgboost"]):
@@ -201,6 +217,16 @@ def page_models() -> None:
             col.image(str(cm), caption=f"Confusion matrix - {model_slug}")
         if roc.exists():
             col.image(str(roc), caption=f"ROC - {model_slug}")
+
+    st.subheader("Optimisation diagnostics")
+    for fname, caption in [
+        ("threshold_sweep.png", "Precision/recall/F1 across decision thresholds"),
+        ("calibration_curves.png", "Calibration (reliability) curves with Brier scores"),
+        ("feature_importance.png", "Top-15 global feature importances per model"),
+    ]:
+        path = FIGURES_DIR / fname
+        if path.exists():
+            st.image(str(path), caption=caption)
 
 
 def page_predict() -> None:
