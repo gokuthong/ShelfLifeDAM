@@ -175,6 +175,15 @@ CH2 = [
      "dataset, and several authors caution that stacking corrections can over-shoot, pushing "
      "recall up while precision collapses. This open question becomes my second research "
      "question below, and I have designed a dedicated experiment around it."),
+    ("p",
+     "A further point from He and Garcia (2009) deserves emphasis because it changes how "
+     "results must be read. Under imbalance, the precision of the minority class is bounded "
+     "by the base rate: even a model with respectable recall will produce many false alarms "
+     "when only one applicant in twelve actually defaults. Consequently, a credit model "
+     "should be judged on the trade-off curve it offers, and on where a chosen threshold "
+     "places the business along that curve, not on any single headline number. This insight "
+     "directly shapes the evaluation plan in Chapter 4, which treats threshold selection as "
+     "a first-class optimisation step rather than an afterthought."),
     ("h2", "2.4 Preprocessing and Data Quality at Scale"),
     ("p",
      "Garcia et al. (2016) argue that preprocessing, covering cleaning, imputation, feature "
