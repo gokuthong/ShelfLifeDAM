@@ -451,6 +451,17 @@ CH4 = [
      "if the scores prove poorly calibrated the dashboard will present percentile risk bands "
      "instead of quoting raw probabilities."),
     ("p",
+     "Efficiency will be measured, not assumed. For each model the project will record the "
+     "wall-clock fitting time and prediction time on the same machine, and will relate the "
+     "measurements to the expected asymptotic behaviour: roughly linear per pass in rows and "
+     "encoded columns for the liblinear solver, and linear in rows for a fixed tree budget "
+     "for the histogram-based boosting method. The one-hot encoding step matters here, since "
+     "it expands the categorical attributes into a matrix of roughly 240 columns, and a "
+     "single-threaded solver pays for every one of them on each iteration. These measurements "
+     "will feed the algorithm-complexity discussion in the final group report and will also "
+     "tell us whether the pipeline can be retrained quickly enough when the relational child "
+     "tables are added in future work."),
+    ("p",
      "Beyond the metrics, the implementation plan assigns explainability and ethics work. "
      "Feature attributions will be produced for the final model, with SHAP as the planned "
      "framework (Lundberg and Lee, 2017), so that individual predictions can be explained to "
