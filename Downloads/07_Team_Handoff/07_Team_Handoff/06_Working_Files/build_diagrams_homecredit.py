@@ -62,10 +62,10 @@ def _arrow(ax, xy_from, xy_to, label="", offset=(0, 0.12), fontsize=9, style="-|
                 bbox=dict(facecolor="white", edgecolor="none", pad=1.0))
 
 
-def _canvas(w, h, title):
+def _canvas(w, h, title, xmax=10, ymax=10):
     fig, ax = plt.subplots(figsize=(w, h))
-    ax.set_xlim(0, 10)
-    ax.set_ylim(0, 10)
+    ax.set_xlim(0, xmax)
+    ax.set_ylim(0, ymax)
     ax.axis("off")
     ax.set_title(title, fontsize=15, fontweight="bold", pad=14)
     return fig, ax
