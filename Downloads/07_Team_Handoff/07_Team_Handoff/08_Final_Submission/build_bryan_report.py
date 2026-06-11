@@ -407,7 +407,11 @@ def build_chapter2(doc):
          "asks which applicant attributes most strongly indicate default risk in the Home Credit portfolio. "
          "RQ2 asks whether interpretable models, namely Logistic Regression and Random Forest, can reach a "
          "level of defaulter recall that is acceptable for lender use. RQ3 asks how model output should be "
-         "presented so that credit analysts can use it in daily approval decisions.")
+         "presented so that credit analysts can use it in daily approval decisions. RQ1 matters because "
+         "attribute level evidence guides both feature selection and the explanations analysts give to "
+         "customers. RQ2 matters because an opaque model that cannot be defended to a regulator is "
+         "unusable in credit, whatever its accuracy. RQ3 matters because a model only changes outcomes "
+         "when its output reaches the person who approves the loan in a form that person trusts.")
     para(doc,
          "Three testable hypotheses follow from these questions. H1 states that the external credit scores "
          "EXT_SOURCE_1, EXT_SOURCE_2 and EXT_SOURCE_3 correlate negatively and significantly with default, "
