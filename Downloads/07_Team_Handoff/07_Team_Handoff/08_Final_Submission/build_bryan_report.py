@@ -486,7 +486,10 @@ def build_chapter3(doc):
          "categorical columns. The transformer will be fitted on training data only, so no statistic from "
          "the test set can leak into the model. Lastly, the data will be divided with a stratified 80 to 20 "
          "split that preserves the 8.07 percent default rate, giving 246,008 training rows and 61,503 test "
-         "rows under a fixed random seed of 42 for reproducibility.")
+         "rows under a fixed random seed of 42 for reproducibility. The one-hot encoder is configured to "
+         "ignore categories it has never seen, so a rare category appearing only in the test portion "
+         "cannot crash the pipeline, and the stratification guarantees that both portions carry the same "
+         "8.07 percent default rate, which keeps every later evaluation comparable.")
 
     h2(doc, "3.3 System Architecture and Contextual Diagram")
     para(doc,
