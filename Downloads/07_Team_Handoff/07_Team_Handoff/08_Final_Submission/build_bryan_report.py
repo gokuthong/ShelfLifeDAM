@@ -579,7 +579,10 @@ def build_chapter4(doc):
          "female applicants. Income type separates working applicants from pensioners and students with "
          "visibly different risk levels. Furthermore, the income and credit amount distributions are "
          "heavily right skewed, so the EDA applies a log transform before plotting them, and this skew is "
-         "also why median imputation was chosen in Chapter 3.")
+         "also why median imputation was chosen in Chapter 3. These five categorical attributes were "
+         "selected for testing because they are the main socioeconomic descriptors on the application "
+         "form, each has a manageable number of categories for a valid chi square test, and each "
+         "corresponds to a question a credit officer would naturally ask an applicant.")
     para(doc,
          "For H1, the point biserial correlation measures the linear association between a numeric "
          "attribute and the binary target. Table 4.2 lists the coefficients, all significant at the five "
