@@ -273,7 +273,9 @@ def build_chapter1(doc):
          "preprocessing modules, the XGBoost model with its class imbalance experiment, the evaluation "
          "module, the dashboard Model Comparison page, and the architecture documentation. Joint decisions, "
          "such as the choice of dataset and the shared evaluation metrics, were made by my team and I "
-         "together at the start of the semester.")
+         "together at the start of the semester. Because this is a progressive report, the exploratory "
+         "findings are reported as work already carried out, while the modelling chapters are written in a "
+         "planning voice and will only be completed with results in the final group report.")
 
     h2(doc, "1.3 Goals and Objectives")
     para(doc,
