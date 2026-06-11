@@ -533,7 +533,13 @@ def build_ch2(doc):
               "loan contract type also contribute. Attribution of this kind is the practical "
               "route to explaining individual predictions (Lundberg and Lee, 2017), and the "
               "pattern we observed is consistent with the SHAP analysis of Yang et al. (2025) on "
-              "the same dataset.")
+              "the same dataset. One caution emerged from the logistic regression coefficients: "
+              "its largest absolute weights belong to rare categories such as the Academic "
+              "degree education level and the Student and Pensioner income types, which contain "
+              "very few applicants. This is a known weakness of linear models on one-hot encoded "
+              "data, where thin categories receive extreme weights, and it reinforced our "
+              "preference for the tree ensembles whose importances concentrated on broadly "
+              "populated features instead.")
     figure(doc, os.path.join(FIG_DIR, "feature_importance.png"),
            "Figure 2.3: Feature importances of the trained models.")
 
