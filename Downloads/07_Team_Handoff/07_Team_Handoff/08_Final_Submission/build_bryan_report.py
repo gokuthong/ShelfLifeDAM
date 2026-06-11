@@ -384,7 +384,10 @@ def build_chapter2(doc):
          "decisions. Both papers argue that the bottleneck is rarely the algorithm; it is the ability to "
          "store, clean and serve large datasets reliably. This project meets the same issues at a smaller "
          "scale, since the single application table is a 166 MB file with 307,511 rows and the full "
-         "relational set is about 2.7 GB across seven tables, which already makes naive reloading painful.")
+         "relational set is about 2.7 GB across seven tables, which already makes naive reloading painful. "
+         "The project responds at its own scale with a parquet cache and one consolidated metrics file, "
+         "which are small but genuine versions of the storage and data serving discipline that the "
+         "literature recommends.")
     para(doc,
          "Besides the technical challenges, credit models face legal and ethical constraints. Article 22 of "
          "the GDPR gives a person the right not to be subject to a decision based solely on automated "
