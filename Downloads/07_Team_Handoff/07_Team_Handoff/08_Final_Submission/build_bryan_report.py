@@ -354,7 +354,8 @@ def build_chapter2(doc):
          "trains quickly, behaves predictably on wide one-hot encoded data, and produces coefficients that "
          "support scorecard style explanation (Hand and Henley, 1997). Its weakness is that it can only "
          "draw linear decision boundaries, so interactions such as young age combined with short employment "
-         "must be engineered manually.")
+         "must be engineered manually. This is also one reason the preprocessing plan in Chapter 3 creates "
+         "explicit ratio features, since the baseline model cannot invent them on its own.")
     para(doc,
          "Random Forest addresses that weakness by averaging many decorrelated decision trees, each grown "
          "on a bootstrap sample with random feature selection at every split (Breiman, 2001). The ensemble "
