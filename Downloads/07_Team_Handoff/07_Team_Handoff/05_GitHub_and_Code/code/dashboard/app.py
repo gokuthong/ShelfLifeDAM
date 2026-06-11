@@ -157,7 +157,7 @@ def page_overview() -> None:
             color_discrete_map={0: REPAID_COLOUR, 1: DEFAULT_COLOUR},
             labels={"TARGET": "Default (1) vs repaid (0)", "AMT_CREDIT": "Credit amount"},
         )
-        st.plotly_chart(fig2, width="stretch")
+        st.plotly_chart(fig2, use_container_width=True)
     with col_b:
         st.subheader("Default rate by gender")
         by_gender = df[df.CODE_GENDER != "XNA"].groupby(
