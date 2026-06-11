@@ -245,7 +245,10 @@ def build_chapter1(doc):
          "reliable applicant may be rejected, which loses interest income and pushes a genuine customer "
          "towards a competitor. My team and I selected loan default prediction in the banking and financial "
          "sector as our project because it is a realistic big data problem where analytics can directly "
-         "improve a business decision that is made thousands of times every day.")
+         "improve a business decision that is made thousands of times every day. The decision is also "
+         "asymmetric, because a single written off loan can wipe out the interest margin earned from many "
+         "good loans, which is why lenders care more about catching likely defaulters than about a tidy "
+         "overall accuracy number.")
     para(doc,
          "The project uses the Home Credit Default Risk dataset that was released for a public Kaggle "
          "competition in 2018. The core application table contains 307,511 historical loan applications "
@@ -805,7 +808,7 @@ def verify():
     print("All %d image source paths exist." % len(IMG))
 
     full_text = "\n".join(p.text for p in doc.paragraphs)
-    assert "—" not in full_text, "em-dash found in document"
+    assert "\u2014" not in full_text, "em-dash found in document"
     print("No em-dashes present.")
 
     cited = [
