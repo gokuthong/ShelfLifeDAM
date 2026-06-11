@@ -546,6 +546,12 @@ def build_ch2(doc):
 
 def build_ch3(doc):
     heading(doc, "Chapter 3: Measuring and Optimising Algorithm Complexity", 1)
+    para(doc, "Big data programming is not only about accuracy; the cost of computing also "
+              "matters once a pipeline reruns many times a day. In this chapter we compare the "
+              "three algorithms on theoretical complexity and on measured wall-clock time, then "
+              "present the two optimisations that improved results without retraining "
+              "(threshold tuning) and the two that improved speed (parquet caching and the "
+              "histogram tree method).")
 
     heading(doc, "3.1 Theoretical Complexity and Measured Runtimes", 2)
     para(doc, "We assessed each algorithm twice, firstly on paper through asymptotic complexity "
