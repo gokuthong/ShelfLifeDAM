@@ -125,9 +125,9 @@ a stratified 20% hold-out):
 
 | Model               | Accuracy | Precision | Recall | F1    | ROC-AUC |
 | ------------------- | -------- | --------- | ------ | ----- | ------- |
-| XGBoost             | 0.756    | 0.188     | 0.608  | 0.287 | 0.763   |
-| Random Forest       | 0.859    | 0.239     | 0.340  | 0.281 | 0.741   |
-| Logistic Regression | 0.691    | 0.162     | 0.680  | 0.262 | 0.749   |
+| XGBoost             | 0.759    | 0.190     | 0.612  | 0.290 | 0.763   |
+| Random Forest       | 0.861    | 0.240     | 0.332  | 0.278 | 0.742   |
+| Logistic Regression | 0.691    | 0.162     | 0.676  | 0.261 | 0.749   |
 
 **XGBoost gives the best F1 (0.29) and ROC-AUC (0.76) with strong recall (0.61)** — it
 catches the most defaulters at a usable precision, so it powers the dashboard's live
