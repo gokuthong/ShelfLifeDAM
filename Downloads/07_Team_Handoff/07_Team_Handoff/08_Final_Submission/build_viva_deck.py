@@ -543,4 +543,4 @@ qr.font.color.rgb = WHITE
 # ================================================================ save
 prs.save(str(OUT))
 print("Saved:", OUT)
-print("Slides:", len(prs.slides.__iter__.__self__._sldIdLst))
+print("Slides:", len(prs.slides))
