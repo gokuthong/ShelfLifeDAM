@@ -298,7 +298,10 @@ def build_chapter1(doc):
          "eight percent of applications default. A model that simply approves everybody would already score "
          "about 92 percent accuracy while catching no defaulters at all. In addition, the project must "
          "remain fully reproducible, with version controlled code, automated unit tests and a fixed random "
-         "seed for the train and test split.")
+         "seed for the train and test split. Lastly, the progressive deliverables themselves act as "
+         "criteria: the statistical evidence, the architecture diagrams and the plans written in this "
+         "report must be complete enough that the remaining weeks can concentrate on model training and "
+         "the dashboard build without revisiting design decisions.")
 
     h2(doc, "1.5 Report Structure")
     para(doc,
