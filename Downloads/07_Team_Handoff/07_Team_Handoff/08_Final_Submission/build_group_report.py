@@ -376,7 +376,15 @@ def build_ch2(doc):
     heading(doc, "Chapter 2: Model Development", 1)
     para(doc, "This chapter describes the functionality of every code module in the project, what "
               "each file is for and how it achieves its job, including testing. We stay at the "
-              "design level throughout and avoid syntax detail.")
+              "design level throughout and avoid syntax detail. The technology stack was Python "
+              "3.12 with pandas 2.2.2 for data handling, scikit-learn 1.5.0 for the preprocessing "
+              "pipeline and the baseline models, XGBoost 2.0.3 for gradient boosting, "
+              "imbalanced-learn for the SMOTE experiment, pyarrow for the parquet cache, "
+              "matplotlib and seaborn for static figures, Plotly and Streamlit 1.36 for the "
+              "dashboard, joblib for model persistence and pytest for automated testing. "
+              "Development was done in Jupyter Notebook for exploration and VS Code for the "
+              "package code, so quick experiments and production modules stayed cleanly "
+              "separated.")
 
     heading(doc, "2.1 Pipeline Architecture", 2)
     para(doc, "The implementation is a Python 3.12 package organised under a src folder, with "
