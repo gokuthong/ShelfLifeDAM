@@ -107,8 +107,15 @@ python run_pipeline.py
 #     python -m src.models.random_forest
 #     python -m src.models.xgboost_model)
 
-# 4. Launch dashboard
+# 4. Post-training optimisation: threshold tuning, calibration, complexity timings,
+#    feature importances (writes reports/threshold_metrics.csv and figures)
+python optimise_models.py
+
+# 5. Launch dashboard
 streamlit run dashboard/app.py
+
+# 6. Run the unit tests
+python -m pytest -q
 ```
 
 ## Results Snapshot
