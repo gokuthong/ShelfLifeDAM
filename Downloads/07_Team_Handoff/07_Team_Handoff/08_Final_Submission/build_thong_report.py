@@ -195,7 +195,13 @@ CH2 = [
      "feature selection improved classifier performance by a large margin, in some "
      "configurations up to around forty percent. Their result is direct evidence that on this "
      "particular dataset the preprocessing decisions are not cosmetic, and it underpins my "
-     "third research question about which decisions matter most."),
+     "third research question about which decisions matter most. Moreover, both papers agree "
+     "on a discipline point that is easy to violate in practice: every statistic used to "
+     "repair the data, whether a median, a mode or a scaling factor, must be learned from the "
+     "training partition alone. Fitting an imputer on the full table quietly transfers "
+     "information from the test rows into the training process, and the resulting evaluation "
+     "flatters the model. My pipeline design in Chapter 3 enforces this rule structurally, by "
+     "placing every repair inside a transformer that is fitted only on training data."),
     ("h2", "2.5 Prior Work on the Home Credit Dataset"),
     ("p",
      "Two recent studies frame what a realistic outcome looks like. Yang et al. (2025) trained "
