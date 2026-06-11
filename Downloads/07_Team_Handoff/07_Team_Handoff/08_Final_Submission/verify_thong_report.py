@@ -29,8 +29,8 @@ for p in doc.paragraphs:
         body_text_all.append(p.text)
         if p.style.name.startswith("Heading"):
             continue
-        if p.text.strip().startswith("Figure "):
-            continue
+        if re.match(r"^Figure [A-Z0-9]+\.\d+:", p.text.strip()):
+            continue  # caption, not body prose
         words += len(p.text.split())
 
 print()
