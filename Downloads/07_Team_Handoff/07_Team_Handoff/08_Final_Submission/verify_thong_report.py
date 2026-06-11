@@ -45,8 +45,9 @@ print("Em-dash check: PASS. Non-ASCII chars in doc:", non_ascii if non_ascii els
 
 # Embedded images count
 img_count = len(doc.inline_shapes)
-print("Embedded inline images:", img_count, "(expected 6)")
-assert img_count == 6, "wrong image count"
+print("Embedded inline images:", img_count, "(expected 7: eda_missing, flowchart,"
+      " eda_ext_source, gantt, flowchart copy, uml, erd)")
+assert img_count == 7, "wrong image count"
 
 # Citation count (unique sources cited in Ch1-Ch4 body text)
 body_str = " ".join(body_text_all)
