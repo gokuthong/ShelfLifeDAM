@@ -437,7 +437,9 @@ def build_chapter3(doc):
          "equals 1 when the client had payment difficulty and 0 when the loan was repaid, and the overall "
          "default rate is 8.07 percent. The data is real, anonymised consumer loan data with no direct "
          "identifiers, and it comfortably satisfies the assignment requirement of at least 100,000 records. "
-         "A separate data dictionary, HomeCredit_columns_description.csv, documents every column.")
+         "A separate data dictionary, HomeCredit_columns_description.csv, documents every column. Working "
+         "through the dictionary early proved worthwhile, because several columns such as DAYS_BIRTH store "
+         "negative day counts relative to the application date and would be easy to misread without it.")
     para(doc,
          "The attributes mix numerical and categorical types. Numerical examples include AMT_INCOME_TOTAL, "
          "AMT_CREDIT, AMT_ANNUITY, DAYS_BIRTH, DAYS_EMPLOYED and the three external scores EXT_SOURCE_1 to "
