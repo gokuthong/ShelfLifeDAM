@@ -125,10 +125,10 @@ def dfd_level1():
     _arrow(ax, (8.4, 8.7), (9.4, 8.7), "X, y stratified\n80/20 split", offset=(0, 0.35), fontsize=8.5)
     _arrow(ax, (11.5, 8.75), (12.1, 8.75), "fitted\npipelines", offset=(0, 0.4), fontsize=8)
     _arrow(ax, (10.45, 8.0), (10.45, 5.5), "hold-out predictions", offset=(0.05, 0.35), fontsize=8.5)
-    _arrow(ax, (11.5, 4.75), (12.1, 4.75), "metrics.csv,\nROC & CM plots", offset=(0, -0.5), fontsize=8)
+    _arrow(ax, (11.5, 4.75), (12.1, 4.75), "metrics.csv,\nROC & CM plots", offset=(0, -1.0), fontsize=8)
     _arrow(ax, (9.4, 4.3), (7.6, 1.7), "metrics table & figures", offset=(1.3, 0.1), fontsize=8.5)
     _arrow(ax, (12.6, 8.2), (7.6, 2.1), "loaded models\n(XGBoost live scoring)",
-           offset=(2.0, -0.4), fontsize=8.5, connection="arc3,rad=0.3")
+           offset=(-0.9, 1.5), fontsize=8.5, connection="arc3,rad=0.3")
     _arrow(ax, (4.9, 1.6), (2.2, 1.6), "risk score, band & charts", offset=(0, 0.3), fontsize=8.5)
     _arrow(ax, (2.2, 1.1), (4.9, 1.1), "applicant details", offset=(0, -0.32), fontsize=8.5)
 
