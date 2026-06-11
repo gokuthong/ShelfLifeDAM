@@ -272,6 +272,15 @@ def build_ch1(doc):
               "percent. The data is real, anonymised and publicly released, it carries no direct "
               "identifiers, and it comfortably exceeds the module requirement of at least 100,000 "
               "records.")
+    para(doc, "The application table does not stand alone. Six relational child tables, namely "
+              "bureau (with bureau_balance underneath it), previous_application, "
+              "POS_CASH_balance, installments_payments and credit_card_balance, join the main "
+              "table on the applicant key SK_ID_CURR and together span about 2.7 GB. After "
+              "studying the supplied data dictionary, HomeCredit_columns_description.csv, we "
+              "decided to scope the deployed model to the single application table and to "
+              "document the child tables as a future extension, since the main table already "
+              "carries the demographic, financial and external score attributes that the "
+              "literature identifies as the core of credit scoring.")
     para(doc, "The 122 attributes fall into two broad families. Firstly, there are categorical "
               "attributes that store applicant circumstances as labels. Examples include "
               "NAME_CONTRACT_TYPE (Cash loans or Revolving loans), CODE_GENDER, "
