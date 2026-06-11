@@ -625,7 +625,11 @@ def build_ch3(doc):
               "which we practised with during the labs, would suit the semi-structured "
               "application records well. On the other hand, for the current single-table batch "
               "analysis the CSV plus parquet arrangement remained adequate and far simpler to "
-              "reproduce, so we kept it and documented the migration path instead.")
+              "reproduce, so we kept it and documented the migration path instead. The parquet "
+              "gain comes from its columnar layout and typed binary encoding, which avoids the "
+              "row-by-row text parsing and type inference that make CSV loading slow, and the "
+              "same columnar format would remain the natural interchange format if the project "
+              "later moved to a distributed engine.")
 
 
 def build_ch4(doc):
