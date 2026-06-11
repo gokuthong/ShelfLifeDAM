@@ -137,6 +137,14 @@ CH2 = [
      "must use sensitive metrics. The random forest itself, introduced by Breiman (2001), "
      "remains a strong reference ensemble because bootstrap aggregation with random feature "
      "selection gives robustness to overfitting with very little tuning."),
+    ("p",
+     "Reading this body of work as a data engineer rather than as a statistician, I take away "
+     "a procedural rule: the comparison protocol matters as much as the contenders. A "
+     "benchmark is only trustworthy when every algorithm consumes the same preprocessed "
+     "matrix, the same partitions and the same metrics. Several of the differences reported "
+     "between studies dissolve once the experimental setup is held constant, and that "
+     "observation is the reason my design binds all models to one shared preprocessing "
+     "transformer instead of letting each model carry its own."),
     ("h2", "2.2 Gradient Boosting for Credit Risk"),
     ("p",
      "My primary modelling interest is gradient boosting. Chen and Guestrin (2016) presented "
