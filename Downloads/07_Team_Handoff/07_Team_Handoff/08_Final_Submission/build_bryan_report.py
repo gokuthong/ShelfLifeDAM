@@ -336,7 +336,10 @@ def build_chapter2(doc):
          "regression on ranking quality. The improvement per application is modest, but across a portfolio "
          "of hundreds of thousands of loans even a small gain in ranking accuracy changes the amount of "
          "money a lender saves. These two studies together justify the comparison plan in this project, "
-         "which keeps an interpretable baseline and tests whether ensembles add real value on our data.")
+         "which keeps an interpretable baseline and tests whether ensembles add real value on our data. "
+         "For a lender, the practical question is not which algorithm tops a leaderboard but whether the "
+         "extra discrimination converts into fewer write-offs without turning away more good customers, "
+         "and that framing guides how the models in this project will be compared.")
     para(doc,
          "Most relevant of all, Yang et al. (2025) modelled the same Home Credit dataset used in this "
          "project. They trained logistic regression, Random Forest and boosting models, found that the "
