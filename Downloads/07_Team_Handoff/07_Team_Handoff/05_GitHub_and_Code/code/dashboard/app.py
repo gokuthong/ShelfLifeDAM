@@ -168,7 +168,7 @@ def page_overview() -> None:
             color_continuous_scale="Reds",
             labels={"TARGET": "Default rate (%)", "CODE_GENDER": "Gender"},
         )
-        st.plotly_chart(fig3, width="stretch")
+        st.plotly_chart(fig3, use_container_width=True)
 
 
 def page_models() -> None:
