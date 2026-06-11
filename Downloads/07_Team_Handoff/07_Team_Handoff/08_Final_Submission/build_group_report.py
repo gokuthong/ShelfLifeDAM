@@ -661,7 +661,12 @@ def build_ch4(doc):
               "smoke test gave us confidence that dashboard refactoring never silently broke a "
               "page, since it boots each page headlessly and fails on any rendering error. "
               "Keeping the whole suite fast was a deliberate choice, so running it never felt "
-              "like a burden and therefore actually happened.")
+              "like a burden and therefore actually happened. The tests also acted as a safety "
+              "net for the division of labour: because each member depended on modules the "
+              "other wrote, the test suite served as an executable contract. When Thong "
+              "adjusted the preprocessing output, Bryan's model tests confirmed within seconds "
+              "whether the downstream pipelines still behaved, and the same protection worked "
+              "in the opposite direction for the evaluation and dashboard code.")
 
     heading(doc, "4.3 Ethical and Legal Considerations", 2)
     para(doc, "Credit scoring sits in ethically sensitive territory, so we handled both the data "
