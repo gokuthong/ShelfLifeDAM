@@ -610,7 +610,9 @@ def build_chapter4(doc):
          "Figure 4.1 visualises the strongest of these relationships by comparing the EXT_SOURCE "
          "distributions for repaid and defaulted loans. The clear separation between the two groups is "
          "exactly what a lender wants from a screening attribute, and it justifies keeping all three "
-         "external scores in every model despite their missing values.")
+         "external scores in every model despite their missing values. The scores arrive already "
+         "normalised between zero and one from external providers, which also makes them straightforward "
+         "to present on the dashboard without further scaling.")
     add_figure(doc, "eda_ext_vs_target",
                "Figure 4.1: Distributions of the external credit scores split by repayment outcome")
 
