@@ -255,6 +255,11 @@ def build_toc(doc):
 
 def build_ch1(doc):
     heading(doc, "Chapter 1: Descriptive Statistics and Exploratory Data Analysis", 1)
+    para(doc, "This chapter presents the dataset our team analysed, the types of attributes it "
+              "contains, the distributions and group differences we observed, and the formal "
+              "statistical tests that justified our variable selection. Every chart referred to "
+              "here was generated programmatically by our EDA module, so the figures can be "
+              "regenerated at any time from the raw data.")
 
     heading(doc, "1.1 Dataset Overview and Attribute Types", 2)
     para(doc, "Our team built this project on the Home Credit Default Risk dataset, which Home "
