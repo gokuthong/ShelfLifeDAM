@@ -65,7 +65,7 @@ def new_slide(title=None):
         r.font.color.rgb = DARK
         SLIDE_TITLES.append(title)
         # footer page number
-        n = len(prs.slides.__iter__.__self__._sldIdLst)  # current count
+        n = len(prs.slides)  # current count
         ftb = slide.shapes.add_textbox(Inches(12.45), Inches(7.08), Inches(0.7), Inches(0.32))
         fp = ftb.text_frame.paragraphs[0]
         fr = fp.add_run()
