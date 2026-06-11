@@ -100,36 +100,37 @@ def dfd_level0():
 
 # ----------------------------------------------------------------------------- DFD L1
 def dfd_level1():
-    fig, ax = _canvas(13, 7.5, "Data Flow Diagram (Level 1) — Home Credit Loan-Default Prediction Pipeline")
+    fig, ax = _canvas(14, 8, "Data Flow Diagram (Level 1) — Home Credit Loan-Default Prediction Pipeline",
+                      xmax=14, ymax=10)
 
-    _box(ax, 0.1, 7.6, 1.9, 1.2, "Home Credit\nDataset (Kaggle)", ENTITY_FC, ENTITY_EC, fontsize=9.5, bold=True)
-    _box(ax, 0.1, 0.6, 1.9, 1.2, "Credit\nAnalyst", ENTITY_FC, ENTITY_EC, fontsize=10, bold=True)
+    _box(ax, 0.2, 8.0, 2.0, 1.3, "Home Credit\nDataset (Kaggle)", ENTITY_FC, ENTITY_EC, fontsize=9.5, bold=True)
+    _box(ax, 0.2, 0.7, 2.0, 1.3, "Credit\nAnalyst", ENTITY_FC, ENTITY_EC, fontsize=10, bold=True)
 
-    _box(ax, 2.7, 7.5, 2.0, 1.4, "1.1\nLoad & Cache\n(data_loader)", PROCESS_FC, PROCESS_EC, fontsize=9.5, bold=True)
-    _box(ax, 5.6, 7.5, 2.2, 1.4, "1.2\nPreprocess &\nEngineer Features\n(preprocessing)", PROCESS_FC, PROCESS_EC, fontsize=9, bold=True)
-    _box(ax, 8.6, 7.5, 2.0, 1.4, "1.3\nTrain Models\n(LR / RF / XGBoost)", PROCESS_FC, PROCESS_EC, fontsize=9.5, bold=True)
-    _box(ax, 8.6, 4.2, 2.0, 1.4, "1.4\nEvaluate Models\n(evaluation)", PROCESS_FC, PROCESS_EC, fontsize=9.5, bold=True)
-    _box(ax, 4.6, 0.5, 2.4, 1.4, "1.5\nStreamlit Dashboard\n(overview, comparison,\nlive prediction)", PROCESS_FC, PROCESS_EC, fontsize=8.8, bold=True)
+    _box(ax, 3.1, 8.0, 2.1, 1.5, "1.1\nLoad & Cache\n(data_loader)", PROCESS_FC, PROCESS_EC, fontsize=9.5, bold=True)
+    _box(ax, 6.1, 8.0, 2.3, 1.5, "1.2\nPreprocess & Engineer\nFeatures (preprocessing)", PROCESS_FC, PROCESS_EC, fontsize=9, bold=True)
+    _box(ax, 9.4, 8.0, 2.1, 1.5, "1.3\nTrain Models\n(LR / RF / XGBoost)", PROCESS_FC, PROCESS_EC, fontsize=9.5, bold=True)
+    _box(ax, 9.4, 4.0, 2.1, 1.5, "1.4\nEvaluate Models\n(evaluation)", PROCESS_FC, PROCESS_EC, fontsize=9.5, bold=True)
+    _box(ax, 4.9, 0.6, 2.7, 1.5, "1.5\nStreamlit Dashboard\n(overview, comparison,\nlive prediction)", PROCESS_FC, PROCESS_EC, fontsize=8.8, bold=True)
 
-    _box(ax, 2.8, 5.0, 1.8, 1.0, "D1  application_\ntrain.csv", STORE_FC, STORE_EC, fontsize=9)
-    _box(ax, 5.8, 5.0, 1.8, 1.0, "D2  Parquet\ncache", STORE_FC, STORE_EC, fontsize=9)
-    _box(ax, 11.2, 7.7, 1.7, 1.0, "D3  models_store\n(.joblib)", STORE_FC, STORE_EC, fontsize=8.8)
-    _box(ax, 11.2, 4.4, 1.7, 1.0, "D4  reports/\nmetrics & figures", STORE_FC, STORE_EC, fontsize=8.8)
+    _box(ax, 3.2, 5.2, 1.9, 1.0, "D1  application_\ntrain.csv", STORE_FC, STORE_EC, fontsize=9)
+    _box(ax, 6.3, 5.2, 1.9, 1.0, "D2  Parquet cache\n(sentinel fixed)", STORE_FC, STORE_EC, fontsize=9)
+    _box(ax, 12.1, 8.2, 1.8, 1.1, "D3  models_store\n(.joblib)", STORE_FC, STORE_EC, fontsize=8.8)
+    _box(ax, 12.1, 4.2, 1.8, 1.1, "D4  reports/\nmetrics & figures", STORE_FC, STORE_EC, fontsize=8.8)
 
-    _arrow(ax, (2.0, 8.2), (2.7, 8.2), "raw CSV", offset=(0, 0.18), fontsize=8.5)
-    _arrow(ax, (3.7, 7.5), (3.7, 6.0), "", )
-    _arrow(ax, (4.6, 5.5), (5.8, 5.5), "cache write/read", offset=(0.1, 0.2), fontsize=8.5)
-    _arrow(ax, (6.7, 6.0), (6.7, 7.5), "cached table\n(sentinel fixed)", offset=(0.95, 0.0), fontsize=8.5)
-    _arrow(ax, (4.7, 8.2), (5.6, 8.2), "validated\ndataframe", offset=(0, 0.28), fontsize=8.5)
-    _arrow(ax, (7.8, 8.2), (8.6, 8.2), "X, y (train/test\nstratified 80/20)", offset=(0, 0.3), fontsize=8.5)
-    _arrow(ax, (10.6, 8.2), (11.2, 8.2), "fitted pipelines", offset=(0, 0.18), fontsize=8)
-    _arrow(ax, (9.6, 7.5), (9.6, 5.6), "hold-out\npredictions", offset=(0.75, 0.0), fontsize=8.5)
-    _arrow(ax, (10.6, 4.9), (11.2, 4.9), "metrics.csv,\nROC & CM plots", offset=(0.05, 0.35), fontsize=8)
-    _arrow(ax, (8.6, 4.5), (7.0, 1.6), "metrics table\n& figures", offset=(0.75, 0.15), fontsize=8.5)
-    _arrow(ax, (11.6, 7.7), (7.0, 1.3), "loaded models (XGBoost live scoring)",
-           offset=(1.1, -0.2), fontsize=8.5, connection="arc3,rad=0.25")
-    _arrow(ax, (4.6, 1.2), (2.0, 1.2), "risk score, band\n& charts", offset=(0, 0.35), fontsize=8.5)
-    _arrow(ax, (2.0, 0.9), (4.6, 0.9), "applicant details", offset=(0, -0.3), fontsize=8.5)
+    _arrow(ax, (2.2, 8.7), (3.1, 8.7), "raw CSV", offset=(0, 0.22), fontsize=8.5)
+    _arrow(ax, (4.1, 8.0), (4.1, 6.2), "store", offset=(0.35, 0), fontsize=8)
+    _arrow(ax, (5.1, 5.7), (6.3, 5.7), "cache", offset=(0, 0.2), fontsize=8)
+    _arrow(ax, (7.3, 6.2), (7.3, 8.0), "cached table", offset=(0.85, 0), fontsize=8.5)
+    _arrow(ax, (5.2, 8.7), (6.1, 8.7), "validated\ndataframe", offset=(0, 0.35), fontsize=8.5)
+    _arrow(ax, (8.4, 8.7), (9.4, 8.7), "X, y stratified\n80/20 split", offset=(0, 0.35), fontsize=8.5)
+    _arrow(ax, (11.5, 8.75), (12.1, 8.75), "fitted\npipelines", offset=(0, 0.4), fontsize=8)
+    _arrow(ax, (10.45, 8.0), (10.45, 5.5), "hold-out predictions", offset=(0.05, 0.35), fontsize=8.5)
+    _arrow(ax, (11.5, 4.75), (12.1, 4.75), "metrics.csv,\nROC & CM plots", offset=(0, -0.5), fontsize=8)
+    _arrow(ax, (9.4, 4.3), (7.6, 1.7), "metrics table & figures", offset=(1.3, 0.1), fontsize=8.5)
+    _arrow(ax, (12.6, 8.2), (7.6, 2.1), "loaded models\n(XGBoost live scoring)",
+           offset=(2.0, -0.4), fontsize=8.5, connection="arc3,rad=0.3")
+    _arrow(ax, (4.9, 1.6), (2.2, 1.6), "risk score, band & charts", offset=(0, 0.3), fontsize=8.5)
+    _arrow(ax, (2.2, 1.1), (4.9, 1.1), "applicant details", offset=(0, -0.32), fontsize=8.5)
 
     _save(fig, "dfd_level1.png")
 
