@@ -592,7 +592,9 @@ def build_chapter4(doc):
          "and employment length follow at -0.078 and -0.075, confirming that younger and shorter employed "
          "applicants default more often, while raw income is almost uncorrelated with default at -0.004 "
          "once the engineered ratios are available. This ordering mirrors the SHAP ranking reported by "
-         "Yang et al. (2025) on the same dataset.")
+         "Yang et al. (2025) on the same dataset. The numeric candidates in Table 4.2 were chosen to span "
+         "every family of numeric information available in the single table scope: the three bureau style "
+         "external scores, the core money amounts, and the engineered ratios designed in Chapter 3.")
     add_caption(doc, "Table 4.2: Point-biserial correlations between numeric attributes and TARGET (all p < 0.05)")
     add_table(doc,
               ["Attribute", "r", "Attribute", "r"],
