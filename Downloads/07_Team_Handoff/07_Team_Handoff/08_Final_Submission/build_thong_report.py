@@ -270,6 +270,15 @@ CH3 = [
      "extension path. The data is released by the lender in anonymised form for public "
      "research, contains no direct identifiers, and exceeds the assignment requirement of one "
      "hundred thousand records."),
+    ("p",
+     "In terms of format, the file is plain text with a header row, which makes it portable "
+     "but inefficient: the 166,133,370-byte CSV must be re-parsed on every load, and column "
+     "types must be re-inferred each time. Structurally the table is wide rather than deep, "
+     "with 122 columns spanning four broad groups, namely applicant demographics, loan terms, "
+     "external bureau scores, and a large block of building-survey measurements about the "
+     "applicant's housing. Understanding this grouping early proved useful, because the "
+     "building-survey block turned out to be the source of most of the missing data, and the "
+     "format weakness motivated the parquet caching decision described in Section 3.5."),
     ("h2", "3.2 Data Quality Issues Confirmed So Far"),
     ("p",
      "I have completed a quality audit of the raw table, and three issues stand out. The first "
