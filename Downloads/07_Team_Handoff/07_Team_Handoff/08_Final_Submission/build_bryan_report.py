@@ -513,7 +513,9 @@ def build_chapter3(doc):
          "translate the raw score into a Low, Moderate or High risk band using the 50th and 80th "
          "percentiles of sample scores. This banding decision exists because raw probabilities from class "
          "weighted models are inflated, so percentile bands communicate risk more honestly to a non "
-         "technical analyst.")
+         "technical analyst. Besides that, reading every figure from the consolidated metrics file means "
+         "the dashboard can never disagree with the written report, because both are generated from the "
+         "same stored numbers.")
 
     h2(doc, "3.4 Data Storage Discussion")
     para(doc,
