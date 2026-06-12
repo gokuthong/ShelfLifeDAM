@@ -44,9 +44,6 @@ plt.ylabel('Income', fontsize=16)
 plt.show()
 
 # 2. K-Means Clustering with Pyspark
-!pip install pyspark
-!pip install findspark
-
 from pyspark.sql import SparkSession
 from pyspark.sql.functions import col
 from pyspark.ml.feature import VectorAssembler, StandardScaler
